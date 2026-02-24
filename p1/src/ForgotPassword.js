@@ -3,7 +3,7 @@ import React, { useState } from "react";
 export default function ForgotPassword({ onBack, onSubmit, lang }) {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
-  const [step, setStep] = useState(1); // 1: إدخال البريد, 2: إدخال الكود
+  const [step, setStep] = useState(1); 
 
   const handleSubmitEmail = (e) => {
     e.preventDefault();
@@ -11,7 +11,7 @@ export default function ForgotPassword({ onBack, onSubmit, lang }) {
       alert(lang === "en" ? "Please enter your email" : "الرجاء إدخال بريدك الإلكتروني");
       return;
     }
-    // محاكاة إرسال الكود
+    
     onSubmit(email);
     setStep(2);
   };
@@ -22,7 +22,7 @@ export default function ForgotPassword({ onBack, onSubmit, lang }) {
       alert(lang === "en" ? "Please enter the code" : "الرجاء إدخال الكود");
       return;
     }
-    // محاكاة التحقق من الكود
+  
     alert(lang === "en" 
       ? "Password reset successfully! Check your email for new password." 
       : "تم إعادة تعيين كلمة المرور بنجاح! تحقق من بريدك الإلكتروني للحصول على كلمة المرور الجديدة.");
