@@ -222,7 +222,7 @@ button:disabled::before {
   align-items: center;
   margin: 1.5rem 0;
   font-size: 0.9rem;
-  flex-wrap: nowrap; /* منع الالتفاف */
+  flex-wrap: nowrap; 
   width: 100%;
 }
 .remember-me {
@@ -231,8 +231,8 @@ button:disabled::before {
   gap: 0.5rem;
   color: #4A7B9D;
   cursor: pointer;
-  white-space: nowrap; /* منع التف النص */
-  flex-shrink: 0; /* منع الانكماش */
+  white-space: nowrap; 
+  flex-shrink: 0; 
 }
 .remember-me input[type="checkbox"] {
   width: auto;
@@ -243,8 +243,8 @@ button:disabled::before {
   color: #8A7BC8;
   text-decoration: none;
   font-weight: 600;
-  white-space: nowrap; /* منع التف النص */
-  flex-shrink: 0; /* منع الانكماش */
+  white-space: nowrap; 
+  flex-shrink: 0; 
 }
 .forgot-password:hover {
   text-decoration: underline;
@@ -1460,7 +1460,7 @@ footer .bg-secondary {
 .modal-body {
   padding: 2rem;
 }
-/* FIX FOR SOCIAL LOGIN MODALS - Input Fields */
+
 .modal-body input {
   width: 100% !important;
   padding: 0.875rem 1rem !important;
@@ -1484,12 +1484,10 @@ footer .bg-secondary {
   padding: 2rem !important;
 }
 
-/* Fix modal buttons */
 .modal-body button {
   width: 100% !important;
   max-width: 100% !important;
 }
-/* END FIX */
 
 .modal-submit-btn {
   width: 100%;
@@ -2250,7 +2248,7 @@ footer .bg-secondary {
     font-size: 1.2rem;
   }
 }
-/* Auth header with language toggle - UPDATED WITH LARGER SIZE */
+/* language & Size */
 .auth-header {
   position: absolute;
   top: 20px;
@@ -2284,4 +2282,73 @@ footer .bg-secondary {
 }
 .language-toggle-btn i {
   font-size: 18px;
+}
+
+/* Srlect Gender Signup */
+select {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #D4E6FF;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  outline: none;
+  background: #F8FBFF;
+  color: #4A7B9D; 
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239B8FD9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: left 1rem center;
+  background-size: 16px;
+  padding-left: 2.5rem;
+}
+
+[dir="rtl"] select {
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+  padding-left: 1rem;
+}
+
+select:focus {
+  border-color: #9B8FD9;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(155, 143, 217, 0.15);
+}
+
+select:invalid,
+select option[value=""] {
+  color: #A0C4E8;
+}
+
+select option[value=""][disabled] {
+  color: #A0C4E8;
+}
+
+select option:not([value=""]) {
+  color: #4A7B9D;
+  background: white;
+}
+
+select:hover {
+  border-color: #9B8FD9;
+  background: #F0F5FF;
+}
+
+/* All feild */
+input::placeholder {
+  color: #A0C4E8;
+  font-size: 0.9rem;
+  opacity: 1;
+}
+
+input[type="date"] {
+  color: #4A7B9D;
+  font-family: inherit;
+}
+
+input[type="date"]:invalid {
+  color: #A0C4E8;
 }

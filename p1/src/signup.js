@@ -6,6 +6,9 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
     email: "",
     password: "",
     confirmPassword: "",
+    gender: "",
+    birthDate: "",
+    phone: ""
   });
 
   const [passwordCriteria, setPasswordCriteria] = useState({
@@ -35,6 +38,18 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
     });
   }, [form.password]);
 
+  const calculateAge = (birthDate) => {
+    if (!birthDate) return null;
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
   const handleSubmit = e => {
     e.preventDefault();
     
@@ -43,8 +58,8 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
       return;
     }
 
-    if (!form.fullName || !form.email || !form.password) {
-      alert(lang === "en" ? "Please fill all fields" : "الرجاء ملء جميع الحقول");
+    if (!form.fullName || !form.email || !form.password || !form.gender || !form.birthDate || !form.phone) {
+      alert(lang === "en" ? "Please fill all required fields" : "الرجاء ملء جميع الحقول المطلوبة");
       return;
     }
 
@@ -53,10 +68,18 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
       return;
     }
 
+    const age = calculateAge(form.birthDate);
+
     const userData = {
       fullName: form.fullName,
       email: form.email,
-      password: form.password
+      password: form.password,
+      gender: form.gender,
+      birthDate: form.birthDate,
+      phone: form.phone,
+      age: age,
+      profilePhoto: null,
+      createdAt: new Date().toISOString()
     };
 
     onSignupSuccess(userData);
@@ -74,6 +97,14 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
       passwordPlaceholder: "Enter your password",
       confirmPassword: "Confirm Password",
       confirmPasswordPlaceholder: "Confirm your password",
+      gender: "Gender",
+      genderPlaceholder: "Select your gender",
+      male: "Male",
+      female: "Female",
+      birthDate: "Date of Birth",
+      birthDatePlaceholder: "mm / dd / yyyy",
+      phone: "Phone Number",
+      phonePlaceholder: "Enter your phone number",
       createAccount: "Create Account",
       haveAccount: "Already have an account?",
       signIn: "Sign In",
@@ -96,6 +127,14 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
       passwordPlaceholder: "أدخل كلمة المرور",
       confirmPassword: "تأكيد كلمة المرور",
       confirmPasswordPlaceholder: "أكد كلمة المرور",
+      gender: "الجنس",
+      genderPlaceholder: "اختر الجنس",
+      male: "ذكر",
+      female: "أنثى",
+      birthDate: "تاريخ الميلاد",
+      birthDatePlaceholder: "yyyy / mm / dd",
+      phone: "رقم الهاتف",
+      phonePlaceholder: "أدخل رقم هاتفك",
       createAccount: "إنشاء حساب",
       haveAccount: "لديك حساب بالفعل؟",
       signIn: "تسجيل الدخول",
@@ -118,7 +157,7 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>{t.fullName}</label>
+          <label>{t.fullName} </label>
           <input
             type="text"
             name="fullName"
@@ -130,7 +169,7 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
         </div>
 
         <div className="form-group">
-          <label>{t.email}</label>
+          <label>{t.email} </label>
           <input
             type="email"
             name="email"
@@ -142,7 +181,51 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
         </div>
 
         <div className="form-group">
-          <label>{t.password}</label>
+          <label>{t.phone} </label>
+          <input
+            type="tel"
+            name="phone"
+            placeholder={t.phonePlaceholder}
+            value={form.phone}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>{t.gender} </label>
+          <select
+            name="gender"
+            value={form.gender}
+            onChange={handleChange}
+            required
+            style={{
+              color: form.gender ? '#4A7B9D' : '#A0C4E8'
+            }}
+          >
+            <option value="" disabled>{t.genderPlaceholder}</option>
+            <option value="male">{t.male}</option>
+            <option value="female">{t.female}</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label>{t.birthDate} </label>
+          <input
+            type="date"
+            name="birthDate"
+            value={form.birthDate}
+            onChange={handleChange}
+            required
+            max={new Date().toISOString().split('T')[0]}
+            style={{
+              color: form.birthDate ? '#4A7B9D' : '#A0C4E8'
+            }}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>{t.password} </label>
           <input
             type="password"
             name="password"
@@ -173,7 +256,7 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
         </div>
 
         <div className="form-group">
-          <label>{t.confirmPassword}</label>
+          <label>{t.confirmPassword} </label>
           <input
             type="password"
             name="confirmPassword"
