@@ -8,25 +8,6 @@ export default function Reminder({ lang, navigateTo }) {
   const [view, setView] = useState("patient"); 
   const [filter, setFilter] = useState("all"); 
   const [notifications, setNotifications] = useState([]);
-  
-  const [patientReminder, setPatientReminder] = useState({
-    title: "",
-    time: "",
-    type: "task",
-    voiceMessage: "",
-    repeat: "once",
-    audioBlob: null
-  });
-
-  const [familyReminder, setFamilyReminder] = useState({
-    title: "",
-    time: "",
-    type: "medication",
-    repeat: "daily",
-    voiceMessage: "",
-    active: true,
-    audioBlob: null
-  });
 
   const handleOpenPatientCard = () => {
     setShowPatientAddCard(true);
@@ -298,47 +279,47 @@ export default function Reminder({ lang, navigateTo }) {
     return `${hour12}:${minutes} ${ampm}`;
   };
 
-const handleResponse = (id, response) => {
-  if (response === "later") {
-    const reminder = reminders.find(r => r.id === id);
-    if (reminder) {
-      const [hours, minutes] = reminder.time.split(':');
-      const date = new Date();
-      date.setHours(parseInt(hours), parseInt(minutes) + 30, 0);
-      
-      const newHours = date.getHours().toString().padStart(2, '0');
-      const newMinutes = date.getMinutes().toString().padStart(2, '0');
-      const newTime = `${newHours}:${newMinutes}`;
-      
+  const handleResponse = (id, response) => {
+    if (response === "later") {
+      const reminder = reminders.find(r => r.id === id);
+      if (reminder) {
+        const [hours, minutes] = reminder.time.split(':');
+        const date = new Date();
+        date.setHours(parseInt(hours), parseInt(minutes) + 30, 0);
+        
+        const newHours = date.getHours().toString().padStart(2, '0');
+        const newMinutes = date.getMinutes().toString().padStart(2, '0');
+        const newTime = `${newHours}:${newMinutes}`;
+        
+        setReminders(reminders.map(r => 
+          r.id === id 
+            ? { 
+                ...r, 
+                time: newTime,
+                displayTime: convertTo12Hour(newTime),
+                response: "later"
+              }
+            : r
+        ));
+        
+        alert(lang === "en" 
+          ? `⏰ Reminder moved to ${convertTo12Hour(newTime)}` 
+          : `⏰ تم نقل التذكير إلى ${convertTo12Hour(newTime)}`);
+      }
+    } else if (response === "completed") {
       setReminders(reminders.map(r => 
         r.id === id 
           ? { 
               ...r, 
-              time: newTime,
-              displayTime: convertTo12Hour(newTime),
-              response: "later"
+              status: "completed", 
+              response: "completed",
+              responseTime: new Date().toLocaleTimeString().slice(0,5)
             }
           : r
       ));
-      
-      alert(lang === "en" 
-        ? `⏰ Reminder moved to ${convertTo12Hour(newTime)}` 
-        : `⏰ تم نقل التذكير إلى ${convertTo12Hour(newTime)}`);
+      alert(lang === "en" ? "✅ Good job! Task completed!" : "✅ أحسنت! تم إكمال المهمة!");
     }
-  } else if (response === "completed") {
-    setReminders(reminders.map(r => 
-      r.id === id 
-        ? { 
-            ...r, 
-            status: "completed", 
-            response: "completed",
-            responseTime: new Date().toLocaleTimeString().slice(0,5)
-          }
-        : r
-    ));
-    alert(lang === "en" ? "✅ Good job! Task completed!" : "✅ أحسنت! تم إكمال المهمة!");
-  }
-};
+  };
 
   const handleDeleteReminder = (id) => {
     if (window.confirm(lang === "en" ? "Delete this reminder?" : "حذف هذا التذكير؟")) {
@@ -346,71 +327,52 @@ const handleResponse = (id, response) => {
     }
   };
 
-  const handleAddPatientReminder = () => {
-    if (patientReminder.title && patientReminder.time) {
+  const handleAddPatientReminder = (reminderData) => {
+    if (reminderData.title && reminderData.time) {
       const reminder = {
         id: reminders.length + 1,
-        title: patientReminder.title,
-        time: patientReminder.time,
-        displayTime: convertTo12Hour(patientReminder.time),
-        type: patientReminder.type,
-        repeat: patientReminder.repeat,
-        voiceMessage: patientReminder.voiceMessage || 
+        title: reminderData.title,
+        time: reminderData.time,
+        displayTime: convertTo12Hour(reminderData.time),
+        type: reminderData.type,
+        repeat: reminderData.repeat,
+        voiceMessage: reminderData.voiceMessage || 
           (lang === "en" 
-            ? `Remember to ${patientReminder.title}` 
-            : `تذكر ${patientReminder.title}`),
+            ? `Remember to ${reminderData.title}` 
+            : `تذكر ${reminderData.title}`),
         status: "pending",
         response: null,
         active: true,
         createdBy: "patient",
         date: new Date().toISOString().split('T')[0],
-        audioUrl: patientReminder.audioBlob ? URL.createObjectURL(patientReminder.audioBlob) : null
+        audioUrl: reminderData.audioBlob ? URL.createObjectURL(reminderData.audioBlob) : null
       };
       setReminders([...reminders, reminder]);
       setShowPatientAddCard(false); 
-      
-      setPatientReminder({
-        title: "",
-        time: "",
-        type: "task",
-        voiceMessage: "",
-        repeat: "once",
-        audioBlob: null
-      });
       
       alert(lang === "en" ? "✅ Reminder added successfully!" : "✅ تم إضافة التذكير بنجاح!");
     }
   };
 
-  const handleAddFamilyReminder = () => {
-    if (familyReminder.title && familyReminder.time) {
+  const handleAddFamilyReminder = (reminderData) => {
+    if (reminderData.title && reminderData.time) {
       const reminder = {
         id: reminders.length + 1,
-        ...familyReminder,
-        time: familyReminder.time,
-        displayTime: convertTo12Hour(familyReminder.time),
+        ...reminderData,
+        time: reminderData.time,
+        displayTime: convertTo12Hour(reminderData.time),
         status: "pending",
-        voiceMessage: familyReminder.voiceMessage || 
+        voiceMessage: reminderData.voiceMessage || 
           (lang === "en" 
-            ? `Remember to ${familyReminder.title}` 
-            : `تذكر ${familyReminder.title}`),
+            ? `Remember to ${reminderData.title}` 
+            : `تذكر ${reminderData.title}`),
         response: null,
         createdBy: "family",
         date: new Date().toISOString().split('T')[0],
-        audioUrl: familyReminder.audioBlob ? URL.createObjectURL(familyReminder.audioBlob) : null
+        audioUrl: reminderData.audioBlob ? URL.createObjectURL(reminderData.audioBlob) : null
       };
       setReminders([...reminders, reminder]);
       setShowFamilyAddCard(false); 
-      
-      setFamilyReminder({
-        title: "",
-        time: "",
-        type: "medication",
-        repeat: "daily",
-        voiceMessage: "",
-        active: true,
-        audioBlob: null
-      });
       
       alert(lang === "en" ? "✅ Reminder added successfully!" : "✅ تم إضافة التذكير بنجاح!");
     }
@@ -548,7 +510,6 @@ const handleResponse = (id, response) => {
             <div className="alert-banner">
               <i className="bi bi-exclamation-triangle"></i>
               <span>{t.alerts.noResponse}</span>
-                {t.alerts.sendAlert}
             </div>
           )}
         </div>
@@ -556,18 +517,30 @@ const handleResponse = (id, response) => {
     );
   };
 
-  const AddCard = ({ type, onClose, onSave, data, setData, isOpen }) => {
+  const AddCard = ({ type, isOpen, onClose, onSave, initialData }) => {
+    const [localData, setLocalData] = useState(initialData || {
+      title: "",
+      time: "",
+      type: type === "patient" ? "task" : "medication",
+      voiceMessage: "",
+      repeat: type === "patient" ? "once" : "daily",
+      audioBlob: null
+    });
+    
     const [isRecording, setIsRecording] = useState(false);
     const [audioURL, setAudioURL] = useState(null);
-    const [audioBlob, setAudioBlob] = useState(null);
+    const [isPlaying, setIsPlaying] = useState(false);
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
     const audioRef = useRef(null);
-    const [isPlaying, setIsPlaying] = useState(false);
     
     if (!isOpen) return null;
     
     const isPatient = type === "patient";
+    
+    const handleSave = () => {
+      onSave(localData);
+    };
     
     const startRecording = async () => {
       try {
@@ -584,8 +557,7 @@ const handleResponse = (id, response) => {
           const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
           const audioUrl = URL.createObjectURL(audioBlob);
           setAudioURL(audioUrl);
-          setAudioBlob(audioBlob);
-          setData({...data, audioBlob: audioBlob});
+          setLocalData({...localData, audioBlob: audioBlob});
           
           stream.getTracks().forEach(track => track.stop());
         };
@@ -616,9 +588,22 @@ const handleResponse = (id, response) => {
 
     const deleteRecording = () => {
       setAudioURL(null);
-      setAudioBlob(null);
-      setData({...data, audioBlob: null});
+      setLocalData({...localData, audioBlob: null});
       setIsPlaying(false);
+    };
+    
+    const handleClose = () => {
+      onClose();
+      setLocalData(initialData || {
+        title: "",
+        time: "",
+        type: type === "patient" ? "task" : "medication",
+        voiceMessage: "",
+        repeat: type === "patient" ? "once" : "daily",
+        audioBlob: null
+      });
+      setAudioURL(null);
+      setIsRecording(false);
     };
     
     return (
@@ -635,8 +620,8 @@ const handleResponse = (id, response) => {
             </label>
             <input
               type="text"
-              value={data.title}
-              onChange={(e) => setData({...data, title: e.target.value})}
+              value={localData.title}
+              onChange={(e) => setLocalData({...localData, title: e.target.value})}
               placeholder={t.form.example}
               className="large-input"
               autoFocus
@@ -649,8 +634,8 @@ const handleResponse = (id, response) => {
               <div className="time-native-wrapper">
                 <input
                   type="time"
-                  value={data.time}
-                  onChange={(e) => setData({...data, time: e.target.value})}
+                  value={localData.time}
+                  onChange={(e) => setLocalData({...localData, time: e.target.value})}
                   className="time-native-input"
                   step="60" 
                 />
@@ -662,8 +647,8 @@ const handleResponse = (id, response) => {
               <label>{t.form.type}</label>
               <div className="type-select-wrapper">
                 <select
-                  value={data.type}
-                  onChange={(e) => setData({...data, type: e.target.value})}
+                  value={localData.type}
+                  onChange={(e) => setLocalData({...localData, type: e.target.value})}
                   className="type-select"
                 >
                   <option value="task">{t.reminderTypes.task}</option>
@@ -681,28 +666,28 @@ const handleResponse = (id, response) => {
             <div className="repeat-options">
               <button 
                 type="button"
-                className={`repeat-option ${data.repeat === "once" ? "active" : ""}`}
-                onClick={() => setData({...data, repeat: "once"})}
+                className={`repeat-option ${localData.repeat === "once" ? "active" : ""}`}
+                onClick={() => setLocalData({...localData, repeat: "once"})}
               >
                 {t.form.once}
               </button>
               <button 
                 type="button"
-                className={`repeat-option ${data.repeat === "daily" ? "active" : ""}`}
-                onClick={() => setData({...data, repeat: "daily"})}
+                className={`repeat-option ${localData.repeat === "daily" ? "active" : ""}`}
+                onClick={() => setLocalData({...localData, repeat: "daily"})}
               >
                 {t.form.daily}
               </button>
               <button 
                 type="button"
-                className={`repeat-option ${data.repeat === "weekly" ? "active" : ""}`}
-                onClick={() => setData({...data, repeat: "weekly"})}
+                className={`repeat-option ${localData.repeat === "weekly" ? "active" : ""}`}
+                onClick={() => setLocalData({...localData, repeat: "weekly"})}
               >
                 {t.form.weekly}
               </button>
             </div>
           </div>
-          {/*Voice*/}
+          
           <div className="form-group voice-group">
             <label>
               {t.form.voiceMessage}
@@ -756,40 +741,17 @@ const handleResponse = (id, response) => {
             </div>
           </div>
 
-          {/* Actions */}
           <div className="form-actions">
             <button 
               className="save-btn"
-              onClick={onSave}
-              disabled={!data.title || !data.time}
+              onClick={handleSave}
+              disabled={!localData.title || !localData.time}
             >
               {t.form.save}
             </button>
             <button 
               className="cancel-btn"
-              onClick={() => {
-                onClose();
-                if (isPatient) {
-                  setPatientReminder({
-                    title: "",
-                    time: "",
-                    type: "task",
-                    voiceMessage: "",
-                    repeat: "once",
-                    audioBlob: null
-                  });
-                } else {
-                  setFamilyReminder({
-                    title: "",
-                    time: "",
-                    type: "medication",
-                    repeat: "daily",
-                    voiceMessage: "",
-                    active: true,
-                    audioBlob: null
-                  });
-                }
-              }}
+              onClick={handleClose}
             >
               {t.form.cancel}
             </button>
@@ -899,8 +861,14 @@ const handleResponse = (id, response) => {
                   isOpen={showPatientAddCard}
                   onClose={handleCloseAllCards}
                   onSave={handleAddPatientReminder}
-                  data={patientReminder}
-                  setData={setPatientReminder}
+                  initialData={{
+                    title: "",
+                    time: "",
+                    type: "task",
+                    voiceMessage: "",
+                    repeat: "once",
+                    audioBlob: null
+                  }}
                 />
               )}
             </div>
@@ -919,8 +887,14 @@ const handleResponse = (id, response) => {
                   isOpen={showFamilyAddCard}
                   onClose={handleCloseAllCards}
                   onSave={handleAddFamilyReminder}
-                  data={familyReminder}
-                  setData={setFamilyReminder}
+                  initialData={{
+                    title: "",
+                    time: "",
+                    type: "medication",
+                    voiceMessage: "",
+                    repeat: "daily",
+                    audioBlob: null
+                  }}
                 />
               )}
             </div>
@@ -947,7 +921,6 @@ const handleResponse = (id, response) => {
             </button>
           </div>
 
-          {/* Today's Reminders */}
           {getFilteredReminders(todayReminders).length > 0 && (
             <div className="reminders-section">
               <h2 className="section-title">
@@ -962,7 +935,6 @@ const handleResponse = (id, response) => {
             </div>
           )}
 
-          {/* Previous Reminders */}
           {getFilteredReminders(previousReminders).length > 0 && (
             <div className="reminders-section">
               <h2 className="section-title">
@@ -985,7 +957,6 @@ const handleResponse = (id, response) => {
           )}
         </div>
       ) : (
-        /* Family Dashboard */
         <div className="family-view">
           <div className="dashboard-header-stats">
             <div className="stat-card">
@@ -1018,7 +989,6 @@ const handleResponse = (id, response) => {
             </div>
           </div>
 
-          {/* Adherence Chart */}
           <div className="adherence-chart">
             <h3>
               <i className="bi bi-graph-up"></i>
@@ -1052,7 +1022,6 @@ const handleResponse = (id, response) => {
             </div>
           </div>
 
-          {/* Response */}
           <div className="response-log">
             <h3>
               <i className="bi bi-table"></i>

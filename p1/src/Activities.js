@@ -41,7 +41,7 @@ function Activities({ lang, navigateTo }) {
       </nav>
 
       <div className="container mt-5">
-        <h1 className="text-center mb-4" style={{ color: '#4A7B9D', fontWeight: '700' }}>
+        <h1 className="text-center mb-4" style={{ color: '#ffffff', fontWeight: '700' }}>
           {lang === "en" ? "Memory Activities" : "أنشطة تحسين الذاكرة"}
         </h1>
         <p className="text-center text-muted mb-5" style={{ fontSize: '1.1rem' }}>

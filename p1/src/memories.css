@@ -1,0 +1,1164 @@
+/* Main page*/
+.mem-page-title {
+    margin-top: 50px;
+    text-align: center;
+    margin-bottom: 10px;
+    color: #ffffff;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.mem-subtitle {
+    text-align: center;
+    margin-bottom: 50px;
+    color: #ffffff;
+    font-size: 1.1rem;
+}
+
+.mem-show-center {
+    text-align: center;
+    margin-top: 60px;
+    margin-bottom: 40px;
+}
+
+/* Main's cards*/
+.mem-cards-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+.mem-card-item {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none !important;
+    border-radius: 15px !important;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    height: 100%;
+    width: 320px;
+    background: white;
+    padding: 1.5rem 1rem 1.5rem 1rem !important;
+}
+
+.mem-card-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(155, 143, 217, 0.2);
+}
+
+.mem-card-item .card-body {
+    padding: 1rem 0.5rem !important;
+    text-align: center;
+}
+
+.mem-card-title {
+    color: #4A7B9D;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin: 1rem 0 0.5rem 0;
+    text-align: center;
+}
+
+.mem-card-text {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    padding: 0 0.5rem;
+    line-height: 1.5;
+}
+
+.mem-custom-btn {
+    width: 200px !important;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 100px;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #6BABE0, #9B8FD9);
+    border: none;
+    color: white;
+    font-weight: 600;
+    margin: 0 auto; 
+    display: block; 
+}
+
+.mem-custom-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(155, 143, 217, 0.4);
+}
+
+.mem-custom-btn i {
+    color: white !important;
+    font-size: 1rem;
+    margin-right: 0.5rem;
+}
+
+.mem-show-center .mem-custom-btn {
+    width: auto !important;
+    padding: 1rem 4rem !important; 
+    display: inline-block;
+    margin: 0 auto;
+    font-size: 18px; 
+    white-space: nowrap; 
+}
+
+.mem-main-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.mem-header-section {
+    background: linear-gradient(135deg, #6BABE0 0%, #9B8FD9 50%, #B8A9E6 100%);
+    padding: 2rem;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    color: white;
+    text-align: center;
+}
+
+.mem-header-section h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.mem-header-section p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.mem-count-badge {
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.15);
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    border-radius: 30px;
+    backdrop-filter: blur(5px);
+}
+
+.mem-stats-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.mem-stat-item {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1rem 2rem;
+    min-width: 120px;
+}
+
+.mem-stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #FFD700;
+}
+
+.mem-stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* search&toolbar*/
+.mem-toolbar-wrapper {
+    background: white;
+    border-radius: 15px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 1rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.mem-search-box {
+    display: flex;
+    align-items: center;
+    background: #F8FBFF;
+    border: 2px solid #D4E6FF;
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    flex: 1;
+    min-width: 300px;
+    max-width: none; 
+}
+
+.mem-search-box i {
+    color: #9B8FD9;
+    margin-right: 0.5rem;
+}
+
+.mem-search-box input {
+    border: none;
+    background: none;
+    width: 100%;
+    padding: 0.5rem;
+    outline: none;
+    color: #4A7B9D;
+}
+
+.mem-filter-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    flex-shrink: 0; 
+}
+
+.mem-filter-btn {
+    background: #F8FBFF;
+    border: 2px solid #D4E6FF;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    color: #4A7B9D;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    white-space: nowrap;
+}
+
+.mem-filter-btn.mem-active {
+    background: linear-gradient(135deg, #6BABE0, #9B8FD9);
+    border-color: transparent;
+    color: white;
+}
+
+.mem-grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.mem-item-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.mem-item-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(155, 143, 217, 0.2);
+}
+
+.mem-item-card.mem-photo-type .mem-image-area,
+.mem-item-card.mem-video-type .mem-image-area {
+    height: 200px;
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border-bottom: 1px solid #f0e8ff;
+}
+
+.mem-item-card.mem-video-type .mem-image-area {
+    position: relative;
+}
+
+.mem-item-card.mem-photo-type img,
+.mem-item-card.mem-video-type img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.mem-item-card:hover .mem-image-area img {
+    transform: scale(1.05);
+}
+
+.mem-play-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mem-item-card:hover .mem-play-overlay {
+    opacity: 1;
+}
+
+.mem-play-overlay i {
+    font-size: 3.5rem;
+    color: white;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    padding: 0.5rem;
+}
+
+.mem-item-card.mem-voice-type .mem-voice-area {
+    height: 200px;
+    background: linear-gradient(135deg, #6BABE0, #9B8FD9, #B8A9E6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.mem-voice-area i {
+    font-size: 4rem;
+    color: white;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+    z-index: 2;
+    animation: none;
+}
+
+.mem-voice-area::before {
+    content: "";
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+    top: -25%;
+    left: -25%;
+    animation: none;
+}
+
+.mem-type-indicator {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem; 
+    background: rgba(255, 255, 255, 0.95);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    z-index: 5;
+    border: 2px solid white;
+}
+
+.mem-type-indicator i {
+    color: #9B8FD9;
+    font-size: 1.3rem;
+}
+
+.mem-content-area {
+    padding: 1.5rem 1.5rem 1.5rem 1.8rem;
+    background: white;
+}
+
+.mem-content-title {
+    color: #4A7B9D;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    padding-right: 0.5rem; 
+}
+
+.mem-content-description {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    padding-right: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2; /*handle written*/
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.mem-footer-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #888;
+    padding: 0.8rem 0.5rem 0 0.5rem;
+    border-top: 1px solid #f0e8ff;
+}
+
+.mem-footer-info span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.mem-footer-info i {
+    color: #9B8FD9;
+    font-size: 0.9rem;
+}
+
+.mem-delete-btn {
+    position: absolute;
+    top: 10px;
+    left: 15px; 
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    opacity: 0;
+    transform: scale(0.8);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border: 2px solid white;
+}
+
+.mem-item-card:hover .mem-delete-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.mem-delete-btn:hover {
+    background: #dc3545;
+    transform: scale(1.1) !important;
+}
+
+.mem-delete-btn i {
+    font-size: 1rem;
+}
+
+.mem-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    padding: 2rem;
+}
+
+.mem-modal-content {
+    background: white;
+    border-radius: 20px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: mem-slideUp 0.3s ease;
+}
+
+.mem-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem; 
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #4A7B9D;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.mem-modal-close:hover {
+    background: #dc3545;
+    color: white;
+    transform: rotate(90deg);
+}
+
+.mem-modal-body {
+    padding: 2rem 2.5rem; 
+}
+
+.mem-modal-title {
+    color: #4A7B9D;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding-right: 1rem;
+}
+
+.mem-modal-description {
+    color: #666;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    padding-right: 1rem;
+}
+
+.mem-modal-image-container,
+.mem-modal-video-container {
+    width: 100%;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.mem-modal-image-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.mem-modal-video-container {
+    background: #000;
+}
+
+.mem-modal-video-container video {
+    width: 100%;
+    display: block;
+}
+
+.mem-modal-audio-container {
+    width: 100%;
+    padding: 2rem;
+    background: linear-gradient(135deg, #6BABE0, #9B8FD9);
+    border-radius: 15px;
+    margin-bottom: 1.5rem;
+}
+
+.mem-audio-player {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: white;
+}
+
+.mem-audio-player i {
+    font-size: 2rem;
+}
+
+.mem-audio-player audio {
+    flex: 1;
+    height: 40px;
+}
+
+.mem-modal-footer {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 1.5rem 1rem 0 1rem;
+    border-top: 1px solid #eee;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.mem-modal-footer span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mem-modal-footer i {
+    color: #9B8FD9;
+}
+
+/* upload memories*/
+.mem-upload-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.mem-upload-content {
+    background: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: mem-slideUp 0.3s ease;
+}
+
+.mem-upload-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mem-upload-header h3 {
+    color: #4A7B9D;
+    margin: 0;
+}
+
+.mem-upload-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.mem-upload-body {
+    padding: 2rem;
+}
+
+.mem-voice-recorder {
+    text-align: center;
+    background: linear-gradient(135deg, #F8FBFF, #F0F4FF);
+    border-radius: 25px;
+    padding: 3rem 2rem;
+    margin-bottom: 2.5rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.mem-record-animation {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 2.5rem;
+    background: linear-gradient(135deg, #6BABE0, #9B8FD9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mem-record-animation i {
+    font-size: 4rem;
+    color: white;
+    animation: none;
+}
+
+.mem-record-timer {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #4A7B9D;
+    margin-bottom: 2rem;
+    font-family: monospace;
+}
+
+.mem-record-btn, .mem-stop-btn, .mem-save-btn {
+    padding: 1.5rem 3.5rem;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0.5rem;
+    min-width: 250px;
+}
+
+.mem-record-btn {
+    background: linear-gradient(135deg, #6BABE0, #9B8FD9);
+    color: white;
+}
+
+.mem-stop-btn {
+    background: #6c757d;
+    color: white;
+}
+
+.mem-save-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+/* case empty*/
+.mem-empty-state {
+    text-align: center;
+    padding: 4rem;
+    background: #F8FBFF;
+    border-radius: 20px;
+    margin-top: 2rem;
+}
+
+.mem-empty-state i {
+    font-size: 5rem;
+    color: #D4E6FF;
+    margin-bottom: 1rem;
+}
+
+.mem-empty-state h3 {
+    color: #4A7B9D;
+    margin-bottom: 1rem;
+}
+
+.mem-empty-state p {
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+.mem-container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.mem-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -0.5rem;
+}
+
+.mem-col-md-8 {
+    width: 100%;
+    max-width: 700px !important;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.mem-form-card {
+    background: white !important;
+    border-radius: 30px !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+    border: none !important;
+    width: 100%;
+    padding: 3.5rem !important;
+    box-sizing: border-box;
+    margin-top: 0.5rem !important;
+}
+
+.mem-form-title {
+    font-size: 2.5rem !important;
+    margin-bottom: 2.5rem !important;
+    text-align: center;
+    background: linear-gradient(135deg, #6BABE0, #9B8FD9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    margin-top: 0 !important;
+    padding-top: 0.5rem !important;
+}
+
+.mem-form-group {
+    margin-bottom: 2rem !important;
+    width: 100%;
+}
+
+.mem-form-label {
+    font-size: 1.1rem !important;
+    margin-bottom: 0.8rem !important;
+    color: #4A7B9D !important;
+    font-weight: 600 !important;
+    display: block;
+    width: 100%;
+}
+
+.mem-form-control {
+    width: 100% !important;
+    box-sizing: border-box;
+    font-size: 1.1rem !important;
+    padding: 1rem 1.5rem !important;
+    border-radius: 15px !important;
+    border: 2px solid #D4E6FF !important;
+    background: #F8FBFF !important;
+    transition: all 0.3s ease;
+}
+
+.mem-form-control:focus {
+    border-color: #9B8FD9 !important;
+    box-shadow: 0 0 0 4px rgba(155, 143, 217, 0.15) !important;
+    outline: none !important;
+    background: white !important;
+}
+
+.mem-form-control-lg {
+    font-size: 1.2rem !important;
+    padding: 1.3rem 1.8rem !important;
+    border-radius: 18px !important;
+}
+
+textarea.mem-form-control {
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+}
+
+.mem-file-input {
+    width: 100% !important;
+    padding: 1.2rem !important;
+    border: 2px dashed #9B8FD9 !important;
+    border-radius: 15px !important;
+    background: #F8FBFF !important;
+    font-size: 1rem !important;
+}
+
+.mem-image-preview {
+    max-width: 100% !important;
+    max-height: 350px !important;
+    border-radius: 20px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+    object-fit: contain;
+    margin-top: 1rem;
+}
+
+.mem-success-message {
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+    background: #d4edda;
+    border-radius: 10px;
+    margin-top: 1rem;
+    font-size: 1rem;
+}
+
+.mem-action-buttons {
+    gap: 1.5rem !important;
+    margin-top: 2.5rem !important;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+.mem-action-buttons .mem-btn {
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+    padding: 1.2rem !important;
+    font-size: 1.1rem !important;
+    border-radius: 50px !important;
+}
+
+.mem-btn-save {
+    background: linear-gradient(135deg, #6BABE0, #9B8FD9);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mem-btn-save:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(155, 143, 217, 0.4);
+}
+
+.mem-btn-cancel {
+    background: #f8f9fa !important;
+    border: 2px solid #dee2e6 !important;
+    color: #4A7B9D !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mem-btn-cancel:hover {
+    background: #e9ecef !important;
+    border-color: #9B8FD9 !important;
+    transform: scale(1.02);
+}
+
+@keyframes mem-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes mem-slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes mem-fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* RTL*/
+[dir="rtl"] .mem-search-box i {
+    margin-right: 0;
+    margin-left: 0.5rem;
+}
+
+[dir="rtl"] .mem-footer-info i {
+    margin-right: 0;
+    margin-left: 0.3rem;
+}
+
+[dir="rtl"] .mem-modal-footer i {
+    margin-right: 0;
+    margin-left: 0.5rem;
+}
+
+[dir="rtl"] .mem-audio-player i {
+    margin-right: 0;
+    margin-left: 1rem;
+}
+
+[dir="rtl"] .mem-type-indicator {
+    right: auto;
+    left: 1.5rem;
+}
+
+[dir="rtl"] .mem-modal-close {
+    right: auto;
+    left: 1.5rem;
+}
+
+[dir="rtl"] .mem-delete-btn {
+    left: auto;
+    right: 15px;
+}
+
+[dir="rtl"] .mem-content-area {
+    padding: 1.5rem 1.8rem 1.5rem 1.5rem;
+}
+
+[dir="rtl"] .mem-content-title,
+[dir="rtl"] .mem-content-description {
+    padding-right: 0;
+    padding-left: 0.5rem;
+}
+
+/*Media */
+@media (max-width: 992px) {
+    .mem-toolbar-wrapper {
+        flex-wrap: wrap;
+    }
+    
+    .mem-search-box {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .mem-filter-group {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+    
+    .mem-col-md-8 {
+        max-width: 750px !important;
+    }
+    
+    .mem-form-card {
+        padding: 3rem !important;
+    }
+    
+    .mem-form-title {
+        font-size: 2.2rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    /* الصفحة الرئيسية */
+    .mem-cards-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .mem-card-item {
+        width: 280px;
+        margin-bottom: 20px;
+    }
+    
+    .mem-page-title {
+        font-size: 2rem;
+    }
+    
+    .mem-subtitle {
+        font-size: 1rem;
+        margin-bottom: 30px;
+    }
+    
+    .mem-custom-btn {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .mem-grid-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .mem-toolbar-wrapper {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .mem-search-box {
+        width: 100%;
+    }
+    
+    .mem-filter-group {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+    
+    .mem-filter-btn {
+        flex: 0 0 auto;
+    }
+    
+    .mem-modal-overlay {
+        padding: 1rem;
+    }
+    
+    .mem-modal-title {
+        font-size: 1.5rem;
+    }
+    
+    .mem-container {
+        padding: 1rem;
+        margin-top: 0.3rem !important;
+    }
+    
+    .mem-form-card {
+        padding: 2.5rem !important;
+        border-radius: 25px !important;
+        margin-top: 0.3rem !important;
+    }
+    
+    .mem-form-title {
+        font-size: 2rem !important;
+        margin-bottom: 2rem !important;
+    }
+    
+    .mem-form-control-lg {
+        font-size: 1.1rem !important;
+        padding: 1.2rem 1.5rem !important;
+    }
+    
+    .mem-record-timer {
+        font-size: 2.8rem !important;
+    }
+    
+    .mem-record-animation {
+        width: 130px !important;
+        height: 130px !important;
+    }
+    
+    .mem-action-buttons {
+        flex-direction: column !important;
+        align-items: center;
+    }
+    
+    .mem-action-buttons .mem-btn {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .mem-delete-btn {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@media (max-width: 480px) {
+    .mem-cards-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .mem-card-item {
+        width: 100%;
+        max-width: 320px;
+    }
+    
+    .mem-page-title {
+        font-size: 1.5rem;
+        margin-top: 30px;
+    }
+    
+    .mem-header-section h1 {
+        font-size: 1.8rem;
+    }
+    
+    .mem-upload-content {
+        width: 95%;
+    }
+    
+    .mem-record-timer {
+        font-size: 2rem;
+    }
+    
+    .mem-modal-body {
+        padding: 1rem;
+    }
+    
+    .mem-count-badge {
+        font-size: 0.9rem;
+        padding: 0.4rem 1rem;
+    }
+    
+    .mem-filter-group {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .mem-filter-btn {
+        flex: 1 1 auto;
+        min-width: 70px;
+        justify-content: center;
+    }
+    
+    .mem-container {
+        padding: 0.5rem;
+        margin-top: 0.2rem !important;
+    }
+    
+    .mem-form-card {
+        padding: 2rem !important;
+        border-radius: 20px !important;
+        margin-top: 0.2rem !important;
+    }
+    
+    .mem-form-title {
+        font-size: 1.8rem !important;
+    }
+    
+    .mem-form-control {
+        font-size: 1rem !important;
+        padding: 1rem 1.2rem !important;
+    }
+    
+    .mem-form-label {
+        font-size: 1rem !important;
+    }
+    
+    .mem-record-timer {
+        font-size: 2.3rem !important;
+    }
+    
+    .mem-record-btn, .mem-stop-btn, .mem-save-btn {
+        padding: 1.2rem 2.5rem !important;
+        font-size: 1.1rem !important;
+        min-width: 200px;
+    }
+}

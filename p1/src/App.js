@@ -17,6 +17,10 @@ import AskZekra from "./AskZekra";
 import AppGuid from "./AppGuid";
 import './App.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import Vmemories from "./Vmemories";
+import AllMemories from "./allMemories";
+import IMemories from "./iMemories";
+import Rmemories from "./Rmemories";
 
 function App() {
   const [isLogin, setIsLogin] = useState(true);
@@ -196,6 +200,14 @@ function App() {
         return <AskZekra lang={lang} navigateTo={navigateTo} />;
       case "appguid":
         return <AppGuid lang={lang} navigateTo={navigateTo} />;
+        case "iMemories":
+         return <IMemories lang={lang} navigateTo={navigateTo} />;
+      case "vmemories":
+        return <Vmemories lang={lang} navigateTo={navigateTo} />;
+      case "rmemories":
+        return <Rmemories lang={lang} navigateTo={navigateTo} />;
+      case "allmemories":
+        return <AllMemories lang={lang} navigateTo={navigateTo} />;
       default:
         return (
           <div dir={lang === "ar" ? "rtl" : "ltr"}>
