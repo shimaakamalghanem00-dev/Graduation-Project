@@ -157,7 +157,7 @@ export default function FamilyTreeGame({ lang, navigateTo }) {
   return (
     <div className="family-tree-game" dir={lang === "ar" ? "rtl" : "ltr"}>
       <div className="game-header">
-        <button className="back-btn" onClick={() => navigateTo("home")}>
+        <button className="back-btn" onClick={() => navigateTo("activities")}>
           <i className="bi bi-arrow-left"></i>
           {lang === "en" ? "Back" : "رجوع"}
         </button>
