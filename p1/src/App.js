@@ -21,7 +21,7 @@ import Vmemories from "./Vmemories";
 import AllMemories from "./allMemories";
 import IMemories from "./iMemories";
 import Rmemories from "./Rmemories";
-/*enjyyyyyyyyyyyyyyyyyyyyyyyyyyy00shimaa*/
+
 function App() {
   const [isLogin, setIsLogin] = useState(true);
   const [user, setUser] = useState(null); 
