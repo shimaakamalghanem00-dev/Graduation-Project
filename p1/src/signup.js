@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lang }) {
+  const [accountType, setAccountType] = useState(null); // null, 'family', 'patient'
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -10,6 +11,7 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
     birthDate: "",
     phone: ""
   });
+  const [familyEmails, setFamilyEmails] = useState([""]); // مصفوفة للإيميلات (حتى 3)
 
   const [passwordCriteria, setPasswordCriteria] = useState({
     minLength: false,
@@ -20,6 +22,25 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleFamilyEmailChange = (index, value) => {
+    const newEmails = [...familyEmails];
+    newEmails[index] = value;
+    setFamilyEmails(newEmails);
+  };
+
+  const addFamilyEmailField = () => {
+    if (familyEmails.length < 3) {
+      setFamilyEmails([...familyEmails, ""]);
+    }
+  };
+
+  const removeFamilyEmailField = (index) => {
+    if (familyEmails.length > 1) {
+      const newEmails = familyEmails.filter((_, i) => i !== index);
+      setFamilyEmails(newEmails);
+    }
   };
 
   useEffect(() => {
@@ -68,6 +89,16 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
       return;
     }
 
+    // التحقق من إيميلات العائلة إذا كان النوع مريض
+    if (accountType === "patient") {
+      const validEmails = familyEmails.filter(email => email.trim() !== "");
+      if (validEmails.length === 0) {
+        alert(lang === "en" ? "Please enter at least one family email" : "الرجاء إدخال بريد إلكتروني واحد للعائلة على الأقل");
+        return;
+      }
+      // يمكن إضافة تحقق من صحة الإيميلات هنا
+    }
+
     const age = calculateAge(form.birthDate);
 
     const userData = {
@@ -79,7 +110,9 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
       phone: form.phone,
       age: age,
       profilePhoto: null,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      accountType: accountType, // 'family' or 'patient'
+      ...(accountType === "patient" && { familyEmails: familyEmails.filter(e => e.trim() !== "") }) // فقط إذا كان مريض
     };
 
     onSignupSuccess(userData);
@@ -114,7 +147,17 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
         upperLower: "Uppercase and lowercase letters",
         number: "At least one number",
         specialChar: "At least one special character (@$*#&)"
-      }
+      },
+      chooseAccountType: "Choose Account Type",
+      familyAccount: "Family Account",
+      patientAccount: "Patient Account",
+      familyDesc: "Create an account to manage reminders and monitor patient",
+      patientDesc: "Create an account for the patient with family supervision",
+      familyEmail: "Family Email",
+      familyEmailPlaceholder: "Enter family member's email",
+      addAnotherEmail: "+ Add another email",
+      maxThreeEmails: "You can add up to 3 family emails",
+      remove: "Remove"
     },
     ar: {
       title: " انضم  ",
@@ -144,18 +187,65 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
         upperLower: "أحرف كبيرة وصغيرة",
         number: "رقم واحد على الأقل",
         specialChar: "رمز خاص واحد على الأقل (@$*#&)"
-      }
+      },
+      chooseAccountType: "اختر نوع الحساب",
+      familyAccount: "حساب عائلة",
+      patientAccount: "حساب مريض",
+      familyDesc: "أنشئ حساباً لإدارة التذكيرات ومتابعة المريض",
+      patientDesc: "أنشئ حساباً للمريض مع إشراف العائلة",
+      familyEmail: "البريد الإلكتروني للعائلة",
+      familyEmailPlaceholder: "أدخل بريد فرد العائلة",
+      addAnotherEmail: "+ إضافة بريد آخر",
+      maxThreeEmails: "يمكنك إضافة حتى 3 بريدات للعائلة",
+      remove: "إزالة"
     }
   };
 
   const t = translations[lang];
 
+  // عرض بطاقات الاختيار إذا لم يتم اختيار نوع الحساب بعد
+  if (accountType === null) {
+    return (
+      <div>
+        <h2>{t.title}</h2>
+        <p className="subtitle">{t.chooseAccountType}</p>
+        <div className="row g-4 mt-3">
+          <div className="col-md-6">
+            <div className="card h-100 text-center p-4" style={{ cursor: 'pointer' }} onClick={() => setAccountType('family')}>
+              <i className="bi bi-people-fill" style={{ fontSize: '3rem', color: '#9B8FD9' }}></i>
+              <h5 className="mt-3">{t.familyAccount}</h5>
+              <p className="text-muted">{t.familyDesc}</p>
+              <button className="btn btn-outline-primary mt-2">{lang === 'en' ? 'Select' : 'اختيار'}</button>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="card h-100 text-center p-4" style={{ cursor: 'pointer' }} onClick={() => setAccountType('patient')}>
+              <i className="bi bi-person-heart" style={{ fontSize: '3rem', color: '#6BABE0' }}></i>
+              <h5 className="mt-3">{t.patientAccount}</h5>
+              <p className="text-muted">{t.patientDesc}</p>
+              <button className="btn btn-outline-primary mt-2">{lang === 'en' ? 'Select' : 'اختيار'}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // عرض فورم التسجيل بعد اختيار النوع
   return (
     <div>
-      <h2>{t.title}</h2>
-      <p className="subtitle">{t.subtitle}</p>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2>{t.title}</h2>
+        <button className="btn btn-sm btn-outline-secondary" onClick={() => setAccountType(null)}>
+          <i className="bi bi-arrow-left"></i> {lang === 'en' ? 'Back' : 'رجوع'}
+        </button>
+      </div>
+      <p className="subtitle">
+        {accountType === 'family' ? t.familyAccount : t.patientAccount} - {t.subtitle}
+      </p>
 
       <form onSubmit={handleSubmit}>
+        {/* الحقول المشتركة */}
         <div className="form-group">
           <label>{t.fullName} </label>
           <input
@@ -224,6 +314,44 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
           />
         </div>
 
+        {/* حقول إضافية لحساب المريض: إيميلات العائلة */}
+        {accountType === 'patient' && (
+          <div className="form-group">
+            <label>{t.familyEmail} <small className="text-muted">({t.maxThreeEmails})</small></label>
+            {familyEmails.map((email, index) => (
+              <div key={index} className="d-flex align-items-center mb-2">
+                <input
+                  type="email"
+                  className="form-control"
+                  placeholder={t.familyEmailPlaceholder}
+                  value={email}
+                  onChange={(e) => handleFamilyEmailChange(index, e.target.value)}
+                  style={{ marginRight: '8px' }}
+                />
+                {familyEmails.length > 1 && (
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-danger"
+                    onClick={() => removeFamilyEmailField(index)}
+                  >
+                    <i className="bi bi-trash"></i>
+                  </button>
+                )}
+              </div>
+            ))}
+            {familyEmails.length < 3 && (
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-primary mt-1"
+                onClick={addFamilyEmailField}
+              >
+                <i className="bi bi-plus-circle"></i> {t.addAnotherEmail}
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* حقول كلمة المرور */}
         <div className="form-group">
           <label>{t.password} </label>
           <input
