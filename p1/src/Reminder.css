@@ -299,6 +299,10 @@
   box-sizing: border-box;
   font-family: inherit;
 }
+[dir="rtl"] .time-native-input {
+  text-align: right;
+  padding: 1rem 1rem 1rem 2.5rem;  
+}
 
 .time-native-input::-webkit-calendar-picker-indicator {
   opacity: 0;
@@ -321,6 +325,10 @@
   color: #9B8FD9;
   font-size: 1.2rem;
   pointer-events: none;
+}
+[dir="rtl"] .time-native-wrapper i {
+  left: 1rem;
+  right: auto;
 }
 
 .type-select-wrapper {

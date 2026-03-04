@@ -1,94 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import './Reminder.css';
 
-export default function Reminder({ lang, navigateTo }) {
+export default function Reminder({ lang, navigateTo, userType }) { 
   const [reminders, setReminders] = useState([]); 
   const [showPatientAddCard, setShowPatientAddCard] = useState(false);
   const [showFamilyAddCard, setShowFamilyAddCard] = useState(false);
-  const [view, setView] = useState("patient"); 
   const [filter, setFilter] = useState("all"); 
   const [notifications, setNotifications] = useState([]);
-
-  const handleOpenPatientCard = () => {
-    setShowPatientAddCard(true);
-    setShowFamilyAddCard(false);
-  };
-
-  const handleOpenFamilyCard = () => {
-    setShowFamilyAddCard(true);
-    setShowPatientAddCard(false);
-  };
-
-  const handleCloseAllCards = () => {
-    setShowPatientAddCard(false);
-    setShowFamilyAddCard(false);
-  };
-
-  // Check REMINDER & TIME
-  useEffect(() => {
-    const checkReminders = setInterval(() => {
-      const now = new Date();
-      const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-      
-      reminders.forEach(reminder => {
-        if (reminder.status === "pending" && reminder.time === currentTime) {
-          if (Notification.permission === "granted") {
-            new Notification(reminder.title, {
-              body: reminder.voiceMessage,
-              icon: "/favicon.ico"
-            });
-          }
-          
-          setNotifications(prev => [
-            ...prev,
-            {
-              id: reminder.id,
-              message: reminder.voiceMessage,
-              time: new Date().toLocaleTimeString()
-            }
-          ]);
-
-          alert(`🔔 ${reminder.title}\n${reminder.voiceMessage}`);
-        }
-      });
-    }, 30000); 
-
-    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-      Notification.requestPermission();
-    }
-
-    return () => clearInterval(checkReminders);
-  }, [reminders]);
-
-  // Check ignored
-  useEffect(() => {
-    const checkIgnoredReminders = setInterval(() => {
-      const now = new Date();
-      const currentTime = now.getTime();
-      
-      setReminders(prevReminders => 
-        prevReminders.map(reminder => {
-          if (reminder.status === "pending") {
-            const [hours, minutes] = reminder.time.split(':');
-            const reminderTime = new Date();
-            reminderTime.setHours(parseInt(hours), parseInt(minutes), 0);
-            
-            if (currentTime - reminderTime.getTime() > 30 * 60 * 1000) {
-              console.log(`Reminder ${reminder.id} is now ignored (30 min passed)`);
-              return {
-                ...reminder,
-                status: "ignored",
-                response: "ignored"
-              };
-            }
-          }
-          return reminder;
-        })
-      );
-    }, 60000); 
-
-    return () => clearInterval(checkIgnoredReminders);
-  }, []); 
 
   const translations = {
     en: {
@@ -115,11 +33,20 @@ export default function Reminder({ lang, navigateTo }) {
       addReminder: "Add Reminder",
       addPatientReminder: "Add My Own Reminder",
       addFamilyReminder: "Add Reminder for Patient",
+      tableTime: "Time",
+      tableReminder: "Reminder",
+      tableType: "Type",
+      tableAddedBy: "Added By",
+      tableResponse: "Response",
+      tableResponseTime: "Response Time",
+      tableStatus: "Status",
+      tableAction: "Action",
       reminderTypes: {
         medication: "💊 Medication",
         hydration: "💧 Water",
         appointment: "📅 Appointment",
-        task: "✅ Task"
+        task: "✅ Task",
+        tableDate: "Date"
       },
       form: {
         title: "Reminder Title",
@@ -190,6 +117,15 @@ export default function Reminder({ lang, navigateTo }) {
       addReminder: "إضافة تذكير",
       addPatientReminder: "إضافة تذكير خاص بي",
       addFamilyReminder: "إضافة تذكير للمريض",
+      tableDate: "التاريخ",
+      tableTime: "الوقت",
+      tableReminder: "التذكير",
+      tableType: "النوع",
+      tableAddedBy: "تمت الإضافة بواسطة",
+      tableResponse: "الاستجابة",
+      tableResponseTime: "وقت الاستجابة",
+      tableStatus: "الحالة",
+      tableAction: "الإجراء",
       reminderTypes: {
         medication: "💊 دواء",
         hydration: "💧 ماء",
@@ -245,6 +181,72 @@ export default function Reminder({ lang, navigateTo }) {
 
   const t = translations[lang];
 
+  // check reminder every 30min
+  useEffect(() => {
+    const checkReminders = setInterval(() => {
+      const now = new Date();
+      const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+      
+      reminders.forEach(reminder => {
+        if (reminder.status === "pending" && reminder.time === currentTime) {
+          if (Notification.permission === "granted") {
+            new Notification(reminder.title, {
+              body: reminder.voiceMessage,
+              icon: "/favicon.ico"
+            });
+          }
+          
+          setNotifications(prev => [
+            ...prev,
+            {
+              id: reminder.id,
+              message: reminder.voiceMessage,
+              time: new Date().toLocaleTimeString()
+            }
+          ]);
+
+          alert(`🔔 ${reminder.title}\n${reminder.voiceMessage}`);
+        }
+      });
+    }, 30000); 
+
+    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+      Notification.requestPermission();
+    }
+
+    return () => clearInterval(checkReminders);
+  }, [reminders]);
+
+  // check ignored
+  useEffect(() => {
+    const checkIgnoredReminders = setInterval(() => {
+      const now = new Date();
+      const currentTime = now.getTime();
+      
+      setReminders(prevReminders => 
+        prevReminders.map(reminder => {
+          if (reminder.status === "pending") {
+            const [hours, minutes] = reminder.time.split(':');
+            const reminderTime = new Date();
+            reminderTime.setHours(parseInt(hours), parseInt(minutes), 0);
+            
+            if (currentTime - reminderTime.getTime() > 30 * 60 * 1000) {
+              console.log(`Reminder ${reminder.id} is now ignored (30 min passed)`);
+              return {
+                ...reminder,
+                status: "ignored",
+                response: "ignored"
+              };
+            }
+          }
+          return reminder;
+        })
+      );
+    }, 60000); 
+
+    return () => clearInterval(checkIgnoredReminders);
+  }, []); 
+
   const today = new Date().toISOString().split('T')[0];
   const todayReminders = reminders.filter(r => r.date === today);
   const previousReminders = reminders.filter(r => r.date !== today);
@@ -254,7 +256,7 @@ export default function Reminder({ lang, navigateTo }) {
     return reminderList.filter(r => r.status === filter);
   };
 
-  // Calculate 
+  // stats
   const stats = {
     total: reminders.length,
     completed: reminders.filter(r => r.status === "completed").length,
@@ -269,7 +271,6 @@ export default function Reminder({ lang, navigateTo }) {
     todayTotal: reminders.filter(r => r.date === today).length
   };
 
-  // 24 to 12
   const convertTo12Hour = (time24) => {
     if (!time24) return "";
     const [hours, minutes] = time24.split(':');
@@ -708,9 +709,9 @@ export default function Reminder({ lang, navigateTo }) {
                       : t.recording.clickToRecord
                     }
                   </span>
-                </button>
-              ) : (
-                <div className="recording-preview">
+                </button>) :
+
+                (<div className="recording-preview">
                   <audio 
                     ref={audioRef} 
                     src={audioURL} 
@@ -815,25 +816,27 @@ export default function Reminder({ lang, navigateTo }) {
           <p className="subtitle">{t.subtitle}</p>
         </div>
 
-        <div className="view-toggle">
-          <button 
-            className={`view-btn ${view === "patient" ? "active" : ""}`}
-            onClick={() => setView("patient")}
-          >
-            <i className="bi bi-person"></i>
-            {t.patientView}
-          </button>
-          <button 
-            className={`view-btn ${view === "family" ? "active" : ""}`}
-            onClick={() => setView("family")}
-          >
-            <i className="bi bi-people"></i>
-            {t.familyView}
-          </button>
-        </div>
+        {/* hide button based user */}
+        {userType === 'family' && (
+          <div className="view-toggle">
+            <button className="view-btn active">
+              <i className="bi bi-people"></i>
+              {t.familyView}
+            </button>
+          </div>
+        )}
+        {userType === 'patient' && (
+          <div className="view-toggle">
+            <button className="view-btn active">
+              <i className="bi bi-person"></i>
+              {t.patientView}
+            </button>
+          </div>
+        )}
       </div>
 
-      {view === "patient" ? (
+      {/* view patient */}
+      {userType === 'patient' && (
         <div className="patient-view">
           <div className="stats-overview">
             <div className="stat-item">
@@ -847,11 +850,12 @@ export default function Reminder({ lang, navigateTo }) {
           </div>
 
           <div className="add-cards-container">
+            {/* card patient*/}
             <div className="add-card-wrapper">
               {!showPatientAddCard ? (
                 <button 
                   className="open-add-card patient"
-                  onClick={handleOpenPatientCard}
+                  onClick={() => setShowPatientAddCard(true)}
                 >
                   <span className="add-card-title">{t.addPatientReminder}</span>
                 </button>
@@ -859,7 +863,7 @@ export default function Reminder({ lang, navigateTo }) {
                 <AddCard
                   type="patient"
                   isOpen={showPatientAddCard}
-                  onClose={handleCloseAllCards}
+                  onClose={() => setShowPatientAddCard(false)}
                   onSave={handleAddPatientReminder}
                   initialData={{
                     title: "",
@@ -867,32 +871,6 @@ export default function Reminder({ lang, navigateTo }) {
                     type: "task",
                     voiceMessage: "",
                     repeat: "once",
-                    audioBlob: null
-                  }}
-                />
-              )}
-            </div>
-
-            <div className="add-card-wrapper">
-              {!showFamilyAddCard ? (
-                <button 
-                  className="open-add-card family"
-                  onClick={handleOpenFamilyCard}
-                >
-                  <span className="add-card-title">{t.addFamilyReminder}</span>
-                </button>
-              ) : (
-                <AddCard
-                  type="family"
-                  isOpen={showFamilyAddCard}
-                  onClose={handleCloseAllCards}
-                  onSave={handleAddFamilyReminder}
-                  initialData={{
-                    title: "",
-                    time: "",
-                    type: "medication",
-                    voiceMessage: "",
-                    repeat: "daily",
                     audioBlob: null
                   }}
                 />
@@ -956,7 +934,10 @@ export default function Reminder({ lang, navigateTo }) {
             </div>
           )}
         </div>
-      ) : (
+      )}
+
+      {/* view family*/}
+      {userType === 'family' && (
         <div className="family-view">
           <div className="dashboard-header-stats">
             <div className="stat-card">
@@ -986,6 +967,35 @@ export default function Reminder({ lang, navigateTo }) {
                 <span className="stat-value">{stats.ignored}</span>
                 <span className="stat-label">{t.ignored}</span>
               </div>
+            </div>
+          </div>
+
+          {/* card family*/}
+          <div className="add-cards-container" style={{ marginBottom: '2rem' }}>
+            <div className="add-card-wrapper">
+              {!showFamilyAddCard ? (
+                <button 
+                  className="open-add-card family"
+                  onClick={() => setShowFamilyAddCard(true)}
+                >
+                  <span className="add-card-title">{t.addFamilyReminder}</span>
+                </button>
+              ) : (
+                <AddCard
+                  type="family"
+                  isOpen={showFamilyAddCard}
+                  onClose={() => setShowFamilyAddCard(false)}
+                  onSave={handleAddFamilyReminder}
+                  initialData={{
+                    title: "",
+                    time: "",
+                    type: "medication",
+                    voiceMessage: "",
+                    repeat: "daily",
+                    audioBlob: null
+                  }}
+                />
+              )}
             </div>
           </div>
 
@@ -1030,15 +1040,15 @@ export default function Reminder({ lang, navigateTo }) {
             <table className="response-table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Time</th>
-                  <th>Reminder</th>
-                  <th>Type</th>
-                  <th>Added By</th>
-                  <th>Response</th>
-                  <th>Response Time</th>
-                  <th>Status</th>
-                  <th>Action</th>
+                  <th>{t.tableDate}</th>
+                  <th>{t.tableTime}</th>
+                  <th>{t.tableReminder}</th>
+                  <th>{t.tableType}</th>
+                  <th>{t.tableAddedBy}</th>
+                  <th>{t.tableResponse}</th>
+                  <th>{t.tableResponseTime}</th>
+                  <th>{t.tableStatus}</th>
+                  <th>{t.tableAction}</th>
                 </tr>
               </thead>
               <tbody>

@@ -248,7 +248,7 @@ function App() {
       case "memories":
         return <Memories lang={lang} navigateTo={navigateTo} />;
       case "reminder":
-        return <Reminder lang={lang} navigateTo={navigateTo} />;
+        return <Reminder lang={lang} navigateTo={navigateTo} userType={user?.type}/>;
       case "about":
         return <About lang={lang} navigateTo={navigateTo} />;
       case "contact":
