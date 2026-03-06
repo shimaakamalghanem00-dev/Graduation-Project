@@ -466,6 +466,24 @@ button:hover {
   border-color: transparent;
   color: white;
 }
+
+.logout-btn {
+  background: linear-gradient(90deg, #6BABE0, #9B8FD9);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  margin-inline-start: 180px;
+  padding: 3px 12px;     
+  font-size: 0.8rem;
+  display: inline-flex;   
+  align-items: center;
+  gap: 5px;
+  height: 28px;           
+  line-height: 1;
+  width: auto;            
+  flex: 0 0 auto;         
+}
+
 .container {
   max-width: 1400px;
   margin: 2rem auto;

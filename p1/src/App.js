@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Login from "./login";
 import Signup from "./signup";
 import ForgotPassword from "./ForgotPassword";
@@ -11,8 +11,8 @@ import Reminder from "./Reminder";
 import About from "./About";
 import Contact from "./Contact";
 import SocialLoginModal from "./SocialLoginModal";
-import FamilyTreeGame from "./FamilyTreeGame"; 
-import MemoryGame from "./MemoryGame"; 
+import FamilyTreeGame from "./FamilyTreeGame";
+import MemoryGame from "./MemoryGame";
 import AskZekra from "./AskZekra";
 import AppGuid from "./AppGuid";
 import './App.css';
@@ -21,9 +21,11 @@ import Vmemories from "./Vmemories";
 import AllMemories from "./allMemories";
 import IMemories from "./iMemories";
 import Rmemories from "./Rmemories";
+import VideoCall from "./videoCall";
+import VoiceCall from "./voiceCall";
 function App() {
   const [isLogin, setIsLogin] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null); 
   const [lang, setLang] = useState("en");
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState("home");
@@ -33,40 +35,91 @@ function App() {
     google: [],
     facebook: []
   });
+  
   const [showSocialModal, setShowSocialModal] = useState(false);
   const [socialProvider, setSocialProvider] = useState(null);
+  // localStorage replace backend
+  useEffect(() => {
+    const savedUsers = localStorage.getItem('users');
+    if (savedUsers) {
+      setUsers(JSON.parse(savedUsers));
+    } else {
+      //replace backend
+      const initialUsers = [
+        {
+          fullName: "Shimaa Kamal",
+          email: "shimaakamal1105@gmail.com",
+          password: "Shimaa00*",
+          accountType: "patient",
+          gender: "female",
+          birthDate: "2005-01-1",
+          phone: "010000000002",
+          createdAt: new Date().toISOString()
+        },
+        {
+          fullName: "Enjy Abdelgaber",
+          email: "enjyabdelgaber@gmail.com",
+          password: "enjy00*",
+          accountType: "family",
+          gender: "female",
+          birthDate: "2004-03-9",
+          phone: "01000000000",
+          createdAt: new Date().toISOString()
+        }
+      ];
+      setUsers(initialUsers);
+      localStorage.setItem('users', JSON.stringify(initialUsers));
+    }
+  }, []);
 
   const toggleLanguage = () => {
     setLang(lang === "en" ? "ar" : "en");
   };
 
   const handleLoginSuccess = (email, password) => {
-    const userExists = users.some(user => user.email === email && user.password === password);
-    
-    if (userExists) {
-      setIsAuthenticated(true);
+    const foundUser = users.find(u => u.email === email && u.password === password);
+    if (foundUser) {
+      setUser({
+        email: foundUser.email,
+        name: foundUser.fullName,
+        type: foundUser.accountType
+      });
     } else {
       alert(lang === "en" ? "Invalid email or password" : "البريد الإلكتروني أو كلمة المرور غير صحيحة");
     }
   };
 
   const handleSignupSuccess = (userData) => {
-    setUsers([...users, userData]);
+    const newUser = {
+      fullName: userData.fullName,
+      email: userData.email,
+      password: userData.password,
+      accountType: userData.accountType,
+      gender: userData.gender,
+      birthDate: userData.birthDate,
+      phone: userData.phone,
+      age: userData.age,
+      profilePhoto: userData.profilePhoto,
+      createdAt: userData.createdAt,
+      ...(userData.accountType === "patient" && { familyEmails: userData.familyEmails })
+    };
+    const updatedUsers = [...users, newUser];
+    setUsers(updatedUsers);
+    localStorage.setItem('users', JSON.stringify(updatedUsers));
     setIsLogin(true);
     alert(lang === "en" ? "Account created successfully! Please login." : "تم إنشاء الحساب بنجاح! الرجاء تسجيل الدخول.");
   };
 
   const handleForgotPassword = (email) => {
     const userExists = users.some(user => user.email === email);
-    
     if (userExists) {
-      alert(lang === "en" 
-        ? `A reset code has been sent to ${email}` 
+      alert(lang === "en"
+        ? `A reset code has been sent to ${email}`
         : `تم إرسال رمز إعادة التعيين إلى ${email}`);
       setShowForgotPassword(false);
     } else {
-      alert(lang === "en" 
-        ? "Email not found. Please sign up first." 
+      alert(lang === "en"
+        ? "Email not found. Please sign up first."
         : "البريد الإلكتروني غير موجود. الرجاء إنشاء حساب أولاً.");
     }
   };
@@ -79,9 +132,9 @@ function App() {
   const handleSocialLoginSubmit = (email, password) => {
     const providerUsers = socialUsers[socialProvider];
     const userExists = providerUsers.some(user => user.email === email && user.password === password);
-    
     if (userExists) {
-      setIsAuthenticated(true);
+      // reblace backend
+      setUser({ email, name: email.split('@')[0], type: 'family' });
       setShowSocialModal(false);
     } else {
       alert(lang === "en" ? "Invalid email or password for this account" : "البريد الإلكتروني أو كلمة المرور غير صحيحة لهذا الحساب");
@@ -119,7 +172,7 @@ function App() {
 
   if (showForgotPassword) {
     return (
-      <ForgotPassword 
+      <ForgotPassword
         onBack={() => setShowForgotPassword(false)}
         onSubmit={handleForgotPassword}
         lang={lang}
@@ -127,12 +180,12 @@ function App() {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!user) {
     return (
       <>
         <div className="app-container">
           <div className="auth-header">
-            <button 
+            <button
               onClick={toggleLanguage}
               className="language-toggle-btn"
             >
@@ -142,16 +195,16 @@ function App() {
           </div>
           <div className="card">
             {isLogin ? (
-              <Login 
-                switchMode={() => setIsLogin(false)} 
+              <Login
+                switchMode={() => setIsLogin(false)}
                 onLoginSuccess={handleLoginSuccess}
                 onSocialLogin={handleSocialLogin}
                 onForgotPassword={() => setShowForgotPassword(true)}
                 lang={lang}
               />
             ) : (
-              <Signup 
-                switchMode={() => setIsLogin(true)} 
+              <Signup
+                switchMode={() => setIsLogin(true)}
                 onSignupSuccess={handleSignupSuccess}
                 onSocialLogin={handleSocialLogin}
                 lang={lang}
@@ -173,6 +226,16 @@ function App() {
     );
   }
 
+  // Welcome based user 
+  const welcomeMessage = lang === "en"
+    ? `Welcome, ${user.name}!`
+    : `مرحباً، ${user.name}!`;
+  const userTypeLabel = user.type === "family"
+    ? (lang === "en" ? "Family" : "عائلة")
+    : (lang === "en" ? "Patient" : "مريض");
+  const userTypeIcon = user.type === "family" ? "bi-people-fill" : "bi-person-heart";
+  const userTypeColor = user.type === "family" ? "#9B8FD9" : "#6BABE0";
+
   const renderPage = () => {
     switch(currentPage) {
       case "activities":
@@ -193,35 +256,65 @@ function App() {
         return <Contact lang={lang} navigateTo={navigateTo} />;
       case "familytree":
         return <FamilyTreeGame lang={lang} navigateTo={navigateTo} />;
-      case "memorygame": 
+      case "memorygame":
         return <MemoryGame lang={lang} navigateTo={navigateTo} />;
       case "askzekra":
         return <AskZekra lang={lang} navigateTo={navigateTo} />;
       case "appguid":
         return <AppGuid lang={lang} navigateTo={navigateTo} />;
-        case "iMemories":
-         return <IMemories lang={lang} navigateTo={navigateTo} />;
+      case "iMemories":
+        return <IMemories lang={lang} navigateTo={navigateTo} />;
       case "vmemories":
         return <Vmemories lang={lang} navigateTo={navigateTo} />;
       case "rmemories":
         return <Rmemories lang={lang} navigateTo={navigateTo} />;
       case "allmemories":
         return <AllMemories lang={lang} navigateTo={navigateTo} />;
-      default:
+      case "VideoCall":
+        return <VideoCall lang={lang} navigateTo={navigateTo} />;
+      case "VoiceCall":
+        return <VoiceCall lang={lang} navigateTo={navigateTo} />;
+        default:
         return (
           <div dir={lang === "ar" ? "rtl" : "ltr"}>
             <nav className="navbar navbar-light bg-light">
               <div className="container-fluid">
                 <div className="navbarbrand fw-bold">ZEKRA</div>
                 <form className="d-flex" onSubmit={(e) => e.preventDefault()}>
-                  <input 
-                    className="form-control me-2" 
-                    type="search" 
+                  <input
+                    className="form-control me-2"
+                    type="search"
                     placeholder={lang === "en" ? "Search" : "بحث"}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
                 </form>
+                <div className="d-flex align-items-center gap-3">
+                  <span style={{ color: '#4A7B9D', fontWeight: 500, whiteSpace: 'nowrap', fontSize: '1rem' }}>
+                    {welcomeMessage}
+                  </span>
+                  <span
+                    className="badge d-flex align-items-center gap-1"
+                    style={{
+                      backgroundColor: userTypeColor,
+                      color: 'white',
+                      padding: '0.5rem 1rem',
+                      borderRadius: '30px',
+                      fontSize: '0.9rem' ,
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    <i className={`bi ${userTypeIcon}`}></i>
+                    {userTypeLabel}
+                  </span>
+                  <button
+                  onClick={() => setUser(null)}
+                className="logout-btn"
+                >
+              <i className="bi bi-box-arrow-right"></i>
+                {lang === "en" ? "Logout" : "تسجيل الخروج"}
+              </button>
+                </div>
               </div>
             </nav>
 
@@ -231,7 +324,7 @@ function App() {
               <div className="cards-wrapper">
                 {filteredCards.map((card, index) => (
                   <div key={index}>
-                    <div 
+                    <div
                       className={`card h-100 text-center ${search ? "highlight" : ""}`}
                       onClick={() => navigateTo(card.page)}
                       style={{ cursor: 'pointer' }}
@@ -279,7 +372,7 @@ function App() {
                     </h6>
                     <ul className="list-unstyled">
                       <li>
-                        <span 
+                        <span
                           className="text-white text-decoration-none"
                           style={{ cursor: 'pointer' }}
                           onClick={() => navigateTo("home")}
@@ -288,7 +381,7 @@ function App() {
                         </span>
                       </li>
                       <li>
-                        <span 
+                        <span
                           className="text-white text-decoration-none"
                           style={{ cursor: 'pointer' }}
                           onClick={() => navigateTo("about")}
@@ -297,7 +390,7 @@ function App() {
                         </span>
                       </li>
                       <li>
-                        <span 
+                        <span
                           className="text-white text-decoration-none"
                           style={{ cursor: 'pointer' }}
                           onClick={() => navigateTo("contact")}
