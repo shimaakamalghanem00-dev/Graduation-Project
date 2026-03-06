@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lang }) {
-  const [accountType, setAccountType] = useState(null); // null, 'family', 'patient'
+  const [accountType, setAccountType] = useState(null); 
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -11,7 +11,7 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
     birthDate: "",
     phone: ""
   });
-  const [familyEmails, setFamilyEmails] = useState([""]); // مصفوفة للإيميلات (حتى 3)
+  const [familyEmails, setFamilyEmails] = useState([""]); 
 
   const [passwordCriteria, setPasswordCriteria] = useState({
     minLength: false,
@@ -89,16 +89,6 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
       return;
     }
 
-    // التحقق من إيميلات العائلة إذا كان النوع مريض
-    if (accountType === "patient") {
-      const validEmails = familyEmails.filter(email => email.trim() !== "");
-      if (validEmails.length === 0) {
-        alert(lang === "en" ? "Please enter at least one family email" : "الرجاء إدخال بريد إلكتروني واحد للعائلة على الأقل");
-        return;
-      }
-      // يمكن إضافة تحقق من صحة الإيميلات هنا
-    }
-
     const age = calculateAge(form.birthDate);
 
     const userData = {
@@ -111,8 +101,8 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
       age: age,
       profilePhoto: null,
       createdAt: new Date().toISOString(),
-      accountType: accountType, // 'family' or 'patient'
-      ...(accountType === "patient" && { familyEmails: familyEmails.filter(e => e.trim() !== "") }) // فقط إذا كان مريض
+      accountType: accountType, 
+      ...(accountType === "patient" && { familyEmails: familyEmails.filter(e => e.trim() !== "") }) 
     };
 
     onSignupSuccess(userData);
@@ -156,7 +146,7 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
       familyEmail: "Family Email",
       familyEmailPlaceholder: "Enter family member's email",
       addAnotherEmail: "+ Add another email",
-      maxThreeEmails: "You can add up to 3 family emails",
+      maxThreeEmails: "You can add up to 3 family emails (optional)",
       remove: "Remove"
     },
     ar: {
@@ -196,14 +186,13 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
       familyEmail: "البريد الإلكتروني للعائلة",
       familyEmailPlaceholder: "أدخل بريد فرد العائلة",
       addAnotherEmail: "+ إضافة بريد آخر",
-      maxThreeEmails: "يمكنك إضافة حتى 3 بريدات للعائلة",
+      maxThreeEmails: "يمكنك إضافة حتى 3 بريدات للعائلة (اختياري)",
       remove: "إزالة"
     }
   };
 
   const t = translations[lang];
 
-  // عرض بطاقات الاختيار إذا لم يتم اختيار نوع الحساب بعد
   if (accountType === null) {
     return (
       <div>
@@ -231,7 +220,6 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
     );
   }
 
-  // عرض فورم التسجيل بعد اختيار النوع
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -245,7 +233,6 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
       </p>
 
       <form onSubmit={handleSubmit}>
-        {/* الحقول المشتركة */}
         <div className="form-group">
           <label>{t.fullName} </label>
           <input
@@ -314,7 +301,7 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
           />
         </div>
 
-        {/* حقول إضافية لحساب المريض: إيميلات العائلة */}
+        {/* famaily email*/}
         {accountType === 'patient' && (
           <div className="form-group">
             <label>{t.familyEmail} <small className="text-muted">({t.maxThreeEmails})</small></label>
@@ -351,7 +338,6 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
           </div>
         )}
 
-        {/* حقول كلمة المرور */}
         <div className="form-group">
           <label>{t.password} </label>
           <input

@@ -35,9 +35,9 @@ function App() {
     google: [],
     facebook: []
   });
-  
   const [showSocialModal, setShowSocialModal] = useState(false);
   const [socialProvider, setSocialProvider] = useState(null);
+
   // localStorage replace backend
   useEffect(() => {
     const savedUsers = localStorage.getItem('users');
@@ -249,7 +249,7 @@ function App() {
       case "memories":
         return <Memories lang={lang} navigateTo={navigateTo} />;
       case "reminder":
-        return <Reminder lang={lang} navigateTo={navigateTo} />;
+        return <Reminder lang={lang} navigateTo={navigateTo} userType={user?.type}/>;
       case "about":
         return <About lang={lang} navigateTo={navigateTo} />;
       case "contact":
