@@ -84,7 +84,8 @@ function App() {
       setUser({
         email: foundUser.email,
         name: foundUser.fullName,
-        type: foundUser.accountType
+        type: foundUser.accountType,
+        profilePhoto: foundUser.profilePhoto
       });
     } else {
       alert(lang === "en" ? "Invalid email or password" : "البريد الإلكتروني أو كلمة المرور غير صحيحة");
@@ -292,6 +293,13 @@ function App() {
                   />
                 </form>
                 <div className="d-flex align-items-center gap-3">
+                  {user.profilePhoto && (
+                <img
+                src={user.profilePhoto}
+                alt="profile"
+                className="navbar-profile-img"
+                />
+                )}
                   <span style={{ color: '#4A7B9D', fontWeight: 500, whiteSpace: 'nowrap', fontSize: '1rem' }}>
                     {welcomeMessage}
                   </span>
