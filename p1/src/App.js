@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import Login from "./login";
 import Signup from "./signup";
@@ -13,7 +14,7 @@ import Contact from "./Contact";
 import SocialLoginModal from "./SocialLoginModal";
 import FamilyTreeGame from "./FamilyTreeGame";
 import MemoryGame from "./MemoryGame";
-import AskZekra from "./AskZekra";
+import AskZekra from "./imgs/AskZekra1.png";
 import AppGuid from "./AppGuid";
 import './App.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -21,8 +22,10 @@ import Vmemories from "./Vmemories";
 import AllMemories from "./allMemories";
 import IMemories from "./iMemories";
 import Rmemories from "./Rmemories";
+import Acti from "./imgs/Acti.png"
 import VideoCall from "./videoCall";
 import VoiceCall from "./voiceCall";
+
 function App() {
   const [isLogin, setIsLogin] = useState(true);
   const [user, setUser] = useState(null); 
@@ -59,7 +62,7 @@ function App() {
         {
           fullName: "Enjy Abdelgaber",
           email: "enjyabdelgaber@gmail.com",
-          password: "enjy00*",
+          password: "Enjy00**",
           accountType: "family",
           gender: "female",
           birthDate: "2004-03-9",
@@ -82,7 +85,8 @@ function App() {
       setUser({
         email: foundUser.email,
         name: foundUser.fullName,
-        type: foundUser.accountType
+        type: foundUser.accountType,
+        profilePhoto: foundUser.profilePhoto
       });
     } else {
       alert(lang === "en" ? "Invalid email or password" : "البريد الإلكتروني أو كلمة المرور غير صحيحة");
@@ -155,13 +159,13 @@ function App() {
   };
 
   const cards = [
-    { title: "Activities", ar: "الأنشطة", page: "activities", img: "https://img2.clipart-library.com/28/flashcard-clipart/flashcard-clipart-11.png" },
+    { title: "Activities", ar: "الأنشطة", page: "activities", img: Acti },
     { title: "Bracelet", ar: "السوار", page: "bracelet", img: "https://cdn-icons-png.flaticon.com/512/3211/3211516.png" },
     { title: "Chat", ar: "الدردشة", page: "chat", img: "https://cdn-icons-png.freepik.com/512/1180/1180287.png" },
     { title: "GPS", ar: "الموقع", page: "gps", img: "https://img.freepik.com/premium-vector/gps-icon-center-city-map-with-pin-location_99087-93.jpg" },
     { title: "Memories", ar: "الذكريات", page: "memories", img: "https://cdn-icons-png.freepik.com/512/3321/3321396.png" },
     { title: "Reminder", ar: "التذكير", page: "reminder", img: "https://cdn-icons-png.flaticon.com/512/2686/2686454.png" },
-    { title: "ASK ZEKRA", ar: "اسأل ذكرى", page: "askzekra", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTq3CXTs3vWh4Ia4CS7vcWhxsxUEwbaERuuNw&s.png" },
+    { title: "ASK ZEKRA", ar: "اسأل ذكرى", page: "askzekra", img: AskZekra },
     { title: "App Guidence", ar: "دليل البرنامج", page: "appguid", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-cJr3EzIfHVIEnCG-Xnn71UrmfDauj-n4Ow&s.png" },
   ];
 
@@ -239,7 +243,7 @@ function App() {
   const renderPage = () => {
     switch(currentPage) {
       case "activities":
-        return <Activities lang={lang} navigateTo={navigateTo} />;
+        return <Activities lang={lang} navigateTo={navigateTo} userType={user.type}/>;
       case "bracelet":
         return <Bracelet lang={lang} navigateTo={navigateTo} />;
       case "chat":
@@ -255,9 +259,9 @@ function App() {
       case "contact":
         return <Contact lang={lang} navigateTo={navigateTo} />;
       case "familytree":
-        return <FamilyTreeGame lang={lang} navigateTo={navigateTo} />;
+        return <FamilyTreeGame lang={lang} navigateTo={navigateTo} userType={user.type}/>;
       case "memorygame":
-        return <MemoryGame lang={lang} navigateTo={navigateTo} />;
+        return <MemoryGame lang={lang} navigateTo={navigateTo} userType={user.type}/>;
       case "askzekra":
         return <AskZekra lang={lang} navigateTo={navigateTo} />;
       case "appguid":
@@ -290,6 +294,13 @@ function App() {
                   />
                 </form>
                 <div className="d-flex align-items-center gap-3">
+                  {user.profilePhoto && (
+                <img
+                src={user.profilePhoto}
+                alt="profile"
+                className="navbar-profile-img"
+                />
+                )}
                   <span style={{ color: '#4A7B9D', fontWeight: 500, whiteSpace: 'nowrap', fontSize: '1rem' }}>
                     {welcomeMessage}
                   </span>

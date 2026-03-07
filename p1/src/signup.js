@@ -43,6 +43,19 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
     }
   };
 
+const [profilePhoto, setProfilePhoto] = useState(null); // الصورة بصيغة base64
+
+const handlePhotoChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProfilePhoto(reader.result); 
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
   useEffect(() => {
     const password = form.password;
     
@@ -73,6 +86,11 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
 
   const handleSubmit = e => {
     e.preventDefault();
+
+    if (!profilePhoto) {
+  alert(lang === "en" ? "Please upload a profile photo" : "الرجاء رفع صورة شخصية");
+  return;
+}
     
     if (form.password !== form.confirmPassword) {
       alert(lang === "en" ? "Passwords do not match!" : "كلمات المرور غير متطابقة!");
@@ -99,7 +117,7 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
       birthDate: form.birthDate,
       phone: form.phone,
       age: age,
-      profilePhoto: null,
+      profilePhoto: profilePhoto,
       createdAt: new Date().toISOString(),
       accountType: accountType, 
       ...(accountType === "patient" && { familyEmails: familyEmails.filter(e => e.trim() !== "") }) 
@@ -380,7 +398,19 @@ export default function Signup({ switchMode, onSignupSuccess, onSocialLogin, lan
             required
           />
         </div>
-
+        <div className="form-group">
+  <label>{lang === 'en' ? 'Profile Photo' : 'الصورة الشخصية'}</label>
+  <input
+    type="file"
+    accept="image/*"
+    onChange={handlePhotoChange}
+    required
+    style={{ padding: '0.5rem', border: '2px solid #D4E6FF', borderRadius: '12px', background: '#F8FBFF' }}
+  />
+  {profilePhoto && (
+    <img src={profilePhoto} alt="Preview" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', marginTop: '10px' }} />
+  )}
+</div>
         <button 
           type="submit"
           disabled={!Object.values(passwordCriteria).every(c => c) || !form.password}

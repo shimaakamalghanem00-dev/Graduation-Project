@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from "react";
 
-export default function FamilyTreeGame({ lang, navigateTo }) {
+export default function FamilyTreeGame({ lang, navigateTo, userType }) {
   const familyMembers = [
     { id: 1, name: "Grandfather", nameAr: "الجد", image: "https://cdn-icons-png.flaticon.com/128/1320/1320735.png", position: "grandfather" },
     { id: 2, name: "Grandmother", nameAr: "الجدة", image: "https://cdn-icons-png.flaticon.com/128/3554/3554003.png", position: "grandmother" },
@@ -11,7 +12,7 @@ export default function FamilyTreeGame({ lang, navigateTo }) {
   ];
 
   // store data
-  const [uploadedData, setUploadedData] = useState({}); // { position: { imageUrl, customName } }
+  const [uploadedData, setUploadedData] = useState({});
   const [shuffledImages, setShuffledImages] = useState([]);
   const [uploadMode, setUploadMode] = useState(false);
   const [userPlacements, setUserPlacements] = useState({});
@@ -21,6 +22,19 @@ export default function FamilyTreeGame({ lang, navigateTo }) {
   const [feedback, setFeedback] = useState({});
   const [gameScores, setGameScores] = useState([]);
   const [currentRoundScore, setCurrentRoundScore] = useState(0);
+
+  // Load scores from localStorage
+  useEffect(() => {
+    const savedScores = localStorage.getItem('familyTreeScores');
+    if (savedScores) {
+      setGameScores(JSON.parse(savedScores));
+    }
+  }, []);
+
+  // Save scores to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('familyTreeScores', JSON.stringify(gameScores));
+  }, [gameScores]);
 
   useEffect(() => {
     resetShuffledImages();
@@ -176,7 +190,7 @@ export default function FamilyTreeGame({ lang, navigateTo }) {
           ...prev,
           [position]: {
             imageUrl,
-            customName: prev[position]?.customName || '' // save the custom name if found
+            customName: prev[position]?.customName || ''
           }
         }));
       }
@@ -212,6 +226,12 @@ export default function FamilyTreeGame({ lang, navigateTo }) {
       cumulativeAverage: "Cumulative Average",
       roundsPlayed: "Rounds Played",
       namePlaceholder: "Enter name",
+      patientResults: "Patient Results - Family Tree",
+      averageScore: "Average Score",
+      basedOn: "Based on",
+      rounds: "rounds",
+      lastRounds: "Last Rounds",
+      round: "Round"
     },
     ar: {
       back: "رجوع",
@@ -230,6 +250,12 @@ export default function FamilyTreeGame({ lang, navigateTo }) {
       cumulativeAverage: "المتوسط التراكمي",
       roundsPlayed: "عدد الجولات",
       namePlaceholder: "أدخل الاسم",
+      patientResults: "نتائج المريض - شجرة العائلة",
+      averageScore: "متوسط النتيجة",
+      basedOn: "بناءً على",
+      rounds: "جولات",
+      lastRounds: "آخر الجولات",
+      round: "جولة"
     }
   };
 
@@ -237,6 +263,62 @@ export default function FamilyTreeGame({ lang, navigateTo }) {
   const assessment = getMemoryAssessment();
   const averageScore = getAverageScore();
 
+  // If user is family show results page 
+  if (userType === 'family') {
+    return (
+      <div className="family-tree-game" dir={lang === "ar" ? "rtl" : "ltr"}>
+        <div className="game-header">
+          <button className="back-btn" onClick={() => navigateTo("activities")}>
+            <i className="bi bi-arrow-left"></i>
+            {currentLang.back}
+          </button>
+          <h1>{currentLang.patientResults}</h1>
+        </div>
+
+        <div className="results-container" style={{ padding: '2rem', background: 'white', borderRadius: '20px', margin: '2rem' }}>
+          <div className="stats-summary" style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <h2>{currentLang.averageScore}</h2>
+            <p style={{
+              fontSize: '3rem',
+              fontWeight: 'bold',
+              color: averageScore >= 80 ? '#28a745' : averageScore >= 50 ? '#ffc107' : '#dc3545'
+            }}>
+              {averageScore}%
+            </p>
+            <p>{currentLang.basedOn} {gameScores.length} {currentLang.rounds}</p>
+          </div>
+
+          <div className="scores-history">
+            <h3>{currentLang.lastRounds}</h3>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {gameScores.slice().reverse().map((score, idx) => (
+                <li key={idx} style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  padding: '0.5rem 1rem',
+                  borderBottom: '1px solid #eee'
+                }}>
+                  <span>{currentLang.round} {gameScores.length - idx}</span>
+                  <span style={{
+                    fontWeight: 'bold',
+                    color: score >= 80 ? '#28a745' : score >= 50 ? '#ffc107' : '#dc3545'
+                  }}>
+                    {score}%
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <button className="back-btn" onClick={() => navigateTo("activities")} style={{ marginTop: '2rem', width: '100%' }}>
+            {lang === "en" ? "Back to Activities" : "العودة للأنشطة"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Patient view, game
   return (
     <div className="family-tree-game" dir={lang === "ar" ? "rtl" : "ltr"}>
       <div className="game-header">
@@ -339,7 +421,6 @@ export default function FamilyTreeGame({ lang, navigateTo }) {
                   }}
                 >
                   <img src={member.image} alt={member.customName || member.name} />
-                  {/* display name */}
                   <p>{member.customName || (lang === "en" ? member.name : member.nameAr)}</p>
                   {isPlaced && !isUploadMode && (
                     <div className="placed-indicator">
@@ -353,7 +434,6 @@ export default function FamilyTreeGame({ lang, navigateTo }) {
                   )}
                 </div>
 
-                {/* edit name */}
                 {isUploadMode && hasCustomImage && (
                   <input
                     type="text"
@@ -361,7 +441,7 @@ export default function FamilyTreeGame({ lang, navigateTo }) {
                     placeholder={currentLang.namePlaceholder}
                     value={uploaded.customName || ''}
                     onChange={(e) => handleCustomNameChange(member.position, e.target.value)}
-                    onClick={(e) => e.stopPropagation()} 
+                    onClick={(e) => e.stopPropagation()}
                   />
                 )}
               </div>
@@ -379,7 +459,6 @@ export default function FamilyTreeGame({ lang, navigateTo }) {
               const placedMember = userPlacements[position];
               const isCorrect = gameChecked && placedMember?.position === position;
               const isWrong = gameChecked && placedMember && placedMember.position !== position;
-              // Static name familyMembers
               const displayName = lang === "en" ? member.name : member.nameAr;
 
               return (
@@ -491,7 +570,6 @@ export default function FamilyTreeGame({ lang, navigateTo }) {
         </div>
       </div>
 
-      {/* Game control */}
       <div className="game-controls">
         {!gameChecked ? (
           <>
