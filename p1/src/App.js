@@ -242,7 +242,7 @@ function App() {
   const renderPage = () => {
     switch(currentPage) {
       case "activities":
-        return <Activities lang={lang} navigateTo={navigateTo} />;
+        return <Activities lang={lang} navigateTo={navigateTo} userType={user.type}/>;
       case "bracelet":
         return <Bracelet lang={lang} navigateTo={navigateTo} />;
       case "chat":
@@ -258,9 +258,9 @@ function App() {
       case "contact":
         return <Contact lang={lang} navigateTo={navigateTo} />;
       case "familytree":
-        return <FamilyTreeGame lang={lang} navigateTo={navigateTo} />;
+        return <FamilyTreeGame lang={lang} navigateTo={navigateTo} userType={user.type}/>;
       case "memorygame":
-        return <MemoryGame lang={lang} navigateTo={navigateTo} />;
+        return <MemoryGame lang={lang} navigateTo={navigateTo} userType={user.type}/>;
       case "askzekra":
         return <AskZekra lang={lang} navigateTo={navigateTo} />;
       case "appguid":

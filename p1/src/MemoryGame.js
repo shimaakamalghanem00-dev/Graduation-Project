@@ -14,7 +14,7 @@ import img11 from './imgs/image11.jpg';
 import img12 from './imgs/image12.jpg';
 import cardBack from './imgs/card_back.webp';
 
-const MemoryGame = ({ lang, navigateTo }) => {
+const MemoryGame = ({ lang, navigateTo, userType }) => {
   const [gameState, setGameState] = useState('start');
   const [difficulty, setDifficulty] = useState('easy');
   const [score, setScore] = useState(0);
@@ -31,10 +31,20 @@ const MemoryGame = ({ lang, navigateTo }) => {
     img7, img8, img9, img10, img11, img12
   ];
 
+  // Load saved stats from localStorage
   useEffect(() => {
+    const savedStats = localStorage.getItem('memoryLevelStats');
+    if (savedStats) {
+      setLevelStats(JSON.parse(savedStats));
+    }
     const savedHighScore = localStorage.getItem('memoryGameHighScore') || 0;
     setHighScore(parseInt(savedHighScore));
   }, []);
+
+  // Save levelStats to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('memoryLevelStats', JSON.stringify(levelStats));
+  }, [levelStats]);
 
   const getMaxScoreForDifficulty = (diff) => {
     switch(diff) {
@@ -49,7 +59,6 @@ const MemoryGame = ({ lang, navigateTo }) => {
     const maxScore = getMaxScoreForDifficulty(currentDiff);
     const percentage = (finalScore / maxScore) * 100;
 
-    //save last 3 result
     setLevelStats(prev => {
       const updated = { ...prev };
       updated[currentDiff] = [...(updated[currentDiff] || []), percentage];
@@ -142,14 +151,12 @@ const MemoryGame = ({ lang, navigateTo }) => {
     setDifficulty(diff);
   };
 
-  // Start game
   const handleStartGame = () => {
     initializeGame(difficulty);
     setGameState('playing');
     setIsGameStarted(true);
   };
 
-  // Handle card click
   const handleCardClick = (index) => {
     if (!isGameStarted) return;
     if (cards[index].isMatched) return;
@@ -170,7 +177,6 @@ const MemoryGame = ({ lang, navigateTo }) => {
     }
   };
 
-  //cards match
   const checkMatch = (index1, index2) => {
     if (cards[index1].value === cards[index2].value) {
       const newCards = [...cards];
@@ -211,13 +217,11 @@ const MemoryGame = ({ lang, navigateTo }) => {
     }
   };
 
-  // Restart game
   const handleRestart = () => {
     initializeGame(difficulty);
     setGameState('playing');
   };
 
-  // Reset 
   const handleResetHighScore = () => {
     setHighScore(0);
     localStorage.setItem('memoryGameHighScore', 0);
@@ -234,16 +238,65 @@ const MemoryGame = ({ lang, navigateTo }) => {
     setIsGameStarted(false);
   };
 
-  // Render start page
+  const getStatsForLevel = (level) => {
+    const scores = levelStats[level] || [];
+    const avg = scores.length ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : 0;
+    return { scores, avg };
+  };
+
+  // If user is family, show results page
+  if (userType === 'family') {
+    const easy = getStatsForLevel('easy');
+    const medium = getStatsForLevel('medium');
+    const hard = getStatsForLevel('hard');
+
+    return (
+      <div className="memory-game-container" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+        <div className="memory-game start-page" style={{ maxWidth: '600px' }}>
+          <button className="back-to-activities-btn" onClick={handleBackToActivities}>
+            {lang === 'en' ? 'Back to Activities' : 'العودة للأنشطة'}
+          </button>
+          <h1 className="game-title">
+            {lang === 'en' ? 'Memory Game Results' : 'نتائج لعبة الذاكرة'}
+          </h1>
+
+          <div style={{ display: 'grid', gap: '1.5rem', marginTop: '2rem' }}>
+            {/* Easy Level */}
+            <div className="stat-card" style={{ background: 'white', padding: '1.5rem', borderRadius: '15px' }}>
+              <h3 style={{ color: '#28a745' }}>{lang === 'en' ? 'Easy Level' : 'المستوى السهل'}</h3>
+              <p>{lang === 'en' ? 'Average:' : 'المتوسط:'} <strong>{easy.avg}%</strong></p>
+              <p>{lang === 'en' ? 'Last scores:' : 'آخر النتائج:'} {easy.scores.join('%, ')}%</p>
+            </div>
+
+            {/* Medium Level */}
+            <div className="stat-card" style={{ background: 'white', padding: '1.5rem', borderRadius: '15px' }}>
+              <h3 style={{ color: '#ffc107' }}>{lang === 'en' ? 'Medium Level' : 'المستوى المتوسط'}</h3>
+              <p>{lang === 'en' ? 'Average:' : 'المتوسط:'} <strong>{medium.avg}%</strong></p>
+              <p>{lang === 'en' ? 'Last scores:' : 'آخر النتائج:'} {medium.scores.join('%, ')}%</p>
+            </div>
+
+            {/* Hard Level */}
+            <div className="stat-card" style={{ background: 'white', padding: '1.5rem', borderRadius: '15px' }}>
+              <h3 style={{ color: '#dc3545' }}>{lang === 'en' ? 'Hard Level' : 'المستوى الصعب'}</h3>
+              <p>{lang === 'en' ? 'Average:' : 'المتوسط:'} <strong>{hard.avg}%</strong></p>
+              <p>{lang === 'en' ? 'Last scores:' : 'آخر النتائج:'} {hard.scores.join('%, ')}%</p>
+            </div>
+          </div>
+
+          <button className="main-btn" onClick={handleBackToActivities} style={{ marginTop: '2rem' }}>
+            {lang === 'en' ? 'Back' : 'رجوع'}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Patient view: show the game
   const renderStartPage = () => (
     <div className="memory-game start-page">
-      <button 
-        className="back-to-activities-btn"
-        onClick={handleBackToActivities}
-      >
+      <button className="back-to-activities-btn" onClick={handleBackToActivities}>
         {lang === 'en' ? 'Back to Activities' : 'العودة للأنشطة'}
       </button>
-      
       <h1 className="game-title">
         {lang === 'en' ? 'Memory Game' : 'لعبة الذاكرة'}
       </h1>
@@ -279,77 +332,74 @@ const MemoryGame = ({ lang, navigateTo }) => {
     </div>
   );
 
-// Render game page
-const renderGamePage = () => {
-  let gridTemplateColumns = '';
-  let gridTemplateRows = '';
-  
-  if (difficulty === 'easy') {
-    gridTemplateColumns = 'repeat(6, 1fr)';
-    gridTemplateRows = 'repeat(2, 1fr)';
-  } else if (difficulty === 'medium') {
-    gridTemplateColumns = 'repeat(8, 1fr)';
-    gridTemplateRows = 'repeat(2, 1fr)';
-  } else { 
-    gridTemplateColumns = 'repeat(8, 1fr)';
-    gridTemplateRows = 'repeat(3, 1fr)';
-  }
+  const renderGamePage = () => {
+    let gridTemplateColumns = '';
+    let gridTemplateRows = '';
+    
+    if (difficulty === 'easy') {
+      gridTemplateColumns = 'repeat(6, 1fr)';
+      gridTemplateRows = 'repeat(2, 1fr)';
+    } else if (difficulty === 'medium') {
+      gridTemplateColumns = 'repeat(8, 1fr)';
+      gridTemplateRows = 'repeat(2, 1fr)';
+    } else { 
+      gridTemplateColumns = 'repeat(8, 1fr)';
+      gridTemplateRows = 'repeat(3, 1fr)';
+    }
 
-  return (
-    <div className="memory-game game-page">
-      <div className="top-bar">
-        <div className="current-score">
-          {lang === 'en' ? 'Score:' : 'النتيجة:'} <span>{score}</span>
+    return (
+      <div className="memory-game game-page">
+        <div className="top-bar">
+          <div className="current-score">
+            {lang === 'en' ? 'Score:' : 'النتيجة:'} <span>{score}</span>
+          </div>
+          <div className="game-buttons">
+            <button className="icon-btn restart-btn" onClick={handleRestart}>
+              <i className="bi bi-arrow-clockwise"></i>
+            </button>
+            <button className="icon-btn back-btn" onClick={handleBackToGameStart}>
+              <i className="bi bi-box-arrow-right"></i>
+            </button>
+          </div>
         </div>
-        <div className="game-buttons">
-          <button className="icon-btn restart-btn" onClick={handleRestart}>
-            <i className="bi bi-arrow-clockwise"></i>
-          </button>
-          <button className="icon-btn back-btn" onClick={handleBackToGameStart}>
-            <i className="bi bi-box-arrow-right"></i>
-          </button>
-        </div>
-      </div>
-      <h1 className="game-title">
-        {lang === 'en' ? 'Memory Game' : 'لعبة الذاكرة'}
-      </h1>
-      <div 
-        className="cards-grid" 
-        style={{
-          gridTemplateColumns: gridTemplateColumns,
-          gridTemplateRows: gridTemplateRows
-        }}
-      >
-        {cards.map((card, index) => (
-          <div 
-            key={card.id} 
-            className={`game-card ${card.isFlipped || card.isMatched || showAllCards ? 'flipped' : ''}`}
-            onClick={() => handleCardClick(index)}
-            style={{
-              animation: `cardRise 0.5s ease-out ${index * 0.05}s forwards`,
-              opacity: 0,
-              transform: 'translateY(20px)'
-            }}
-          >
-            <div className="card-inner">
-              <div className="card-front">
-                <img src={card.imgPath} alt={`card-${card.value}`} />
-              </div>
-              <div className="card-back">
-                <img src={cardBack} alt="card-back" />
+        <h1 className="game-title">
+          {lang === 'en' ? 'Memory Game' : 'لعبة الذاكرة'}
+        </h1>
+        <div 
+          className="cards-grid" 
+          style={{
+            gridTemplateColumns: gridTemplateColumns,
+            gridTemplateRows: gridTemplateRows
+          }}
+        >
+          {cards.map((card, index) => (
+            <div 
+              key={card.id} 
+              className={`game-card ${card.isFlipped || card.isMatched || showAllCards ? 'flipped' : ''}`}
+              onClick={() => handleCardClick(index)}
+              style={{
+                animation: `cardRise 0.5s ease-out ${index * 0.05}s forwards`,
+                opacity: 0,
+                transform: 'translateY(20px)'
+              }}
+            >
+              <div className="card-inner">
+                <div className="card-front">
+                  <img src={card.imgPath} alt={`card-${card.value}`} />
+                </div>
+                <div className="card-back">
+                  <img src={cardBack} alt="card-back" />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
-  // Render end page
   const renderEndPage = () => (
     <div className="memory-game end-page">
-      
       <h1 className="game-title">
         {lang === 'en' ? 'Game Over!' : 'انتهت اللعبة!'}
       </h1>
