@@ -21,8 +21,13 @@ import Vmemories from "./Vmemories";
 import AllMemories from "./allMemories";
 import IMemories from "./iMemories";
 import Rmemories from "./Rmemories";
+<<<<<<< HEAD
 import Acti from './imgs/Acti.png';
 
+=======
+import VideoCall from "./videoCall";
+import VoiceCall from "./voiceCall";
+>>>>>>> e2c5672e2110456f1d6b95a0e25e7b512f89e85d
 function App() {
   const [isLogin, setIsLogin] = useState(true);
   const [user, setUser] = useState(null); 
@@ -270,7 +275,11 @@ function App() {
         return <Rmemories lang={lang} navigateTo={navigateTo} />;
       case "allmemories":
         return <AllMemories lang={lang} navigateTo={navigateTo} />;
-      default:
+      case "VideoCall":
+        return <VideoCall lang={lang} navigateTo={navigateTo} />;
+      case "VoiceCall":
+        return <VoiceCall lang={lang} navigateTo={navigateTo} />;
+        default:
         return (
           <div dir={lang === "ar" ? "rtl" : "ltr"}>
             <nav className="navbar navbar-light bg-light">
