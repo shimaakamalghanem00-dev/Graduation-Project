@@ -21,6 +21,7 @@ import Vmemories from "./Vmemories";
 import AllMemories from "./allMemories";
 import IMemories from "./iMemories";
 import Rmemories from "./Rmemories";
+import Acti from './imgs/Acti.png';
 
 function App() {
   const [isLogin, setIsLogin] = useState(true);
@@ -154,7 +155,7 @@ function App() {
   };
 
   const cards = [
-    { title: "Activities", ar: "الأنشطة", page: "activities", img: "https://img2.clipart-library.com/28/flashcard-clipart/flashcard-clipart-11.png" },
+    { title: "Activities", ar: "الأنشطة", page: "activities", img: Acti },
     { title: "Bracelet", ar: "السوار", page: "bracelet", img: "https://cdn-icons-png.flaticon.com/512/3211/3211516.png" },
     { title: "Chat", ar: "الدردشة", page: "chat", img: "https://cdn-icons-png.freepik.com/512/1180/1180287.png" },
     { title: "GPS", ar: "الموقع", page: "gps", img: "https://img.freepik.com/premium-vector/gps-icon-center-city-map-with-pin-location_99087-93.jpg" },

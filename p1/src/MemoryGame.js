@@ -13,7 +13,6 @@ import img10 from './imgs/image10.jpg';
 import img11 from './imgs/image11.jpg';
 import img12 from './imgs/image12.jpg';
 import cardBack from './imgs/card_back.webp';
-//import backgroundImg from './imgs/background.jpg';
 
 const MemoryGame = ({ lang, navigateTo }) => {
   const [gameState, setGameState] = useState('start');
@@ -25,6 +24,7 @@ const MemoryGame = ({ lang, navigateTo }) => {
   const [matchedCards, setMatchedCards] = useState([]);
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [showAllCards, setShowAllCards] = useState(false);
+  const [levelStats, setLevelStats] = useState({ easy: [], medium: [], hard: [] });
 
   const imgsPaths = [
     img1, img2, img3, img4, img5, img6,
@@ -35,6 +35,45 @@ const MemoryGame = ({ lang, navigateTo }) => {
     const savedHighScore = localStorage.getItem('memoryGameHighScore') || 0;
     setHighScore(parseInt(savedHighScore));
   }, []);
+
+  const getMaxScoreForDifficulty = (diff) => {
+    switch(diff) {
+      case 'easy': return 40;
+      case 'medium': return 60;
+      case 'hard': return 80;
+      default: return 40;
+    }
+  };
+
+  const addGameResult = (finalScore, currentDiff) => {
+    const maxScore = getMaxScoreForDifficulty(currentDiff);
+    const percentage = (finalScore / maxScore) * 100;
+
+    //save last 3 result
+    setLevelStats(prev => {
+      const updated = { ...prev };
+      updated[currentDiff] = [...(updated[currentDiff] || []), percentage];
+      if (updated[currentDiff].length > 3) {
+        updated[currentDiff] = updated[currentDiff].slice(-3);
+      }
+
+      // check upgrade
+      if (updated[currentDiff].length === 3 && updated[currentDiff].every(p => p >= 95)) {
+        if (currentDiff === 'easy') {
+          setTimeout(() => {
+            setDifficulty('medium');
+            alert(lang === 'en' ? '🎉 Excellent! You reached Medium level!' : '🎉 ممتاز! لقد وصلت للمستوى المتوسط!');
+          }, 100);
+        } else if (currentDiff === 'medium') {
+          setTimeout(() => {
+            setDifficulty('hard');
+            alert(lang === 'en' ? '🎉 Amazing! You reached Hard level!' : '🎉 رائع! لقد وصلت للمستوى الصعب!');
+          }, 100);
+        }
+      }
+      return updated;
+    });
+  };
 
   const initializeGame = (diff) => {
     let numPairs;
@@ -146,6 +185,7 @@ const MemoryGame = ({ lang, navigateTo }) => {
       if (newMatchedCards.length === cards.length) {
         setTimeout(() => {
           setGameState('end');
+          addGameResult(score, difficulty);  
           if (score > highScore) {
             setHighScore(score);
             localStorage.setItem('memoryGameHighScore', score);
@@ -165,6 +205,7 @@ const MemoryGame = ({ lang, navigateTo }) => {
       if (newScore <= 0) {
         setTimeout(() => {
           setGameState('end');
+          addGameResult(newScore, difficulty); 
         }, 2000);
       }
     }
