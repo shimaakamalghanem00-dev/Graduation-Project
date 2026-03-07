@@ -14,7 +14,8 @@ import Contact from "./Contact";
 import SocialLoginModal from "./SocialLoginModal";
 import FamilyTreeGame from "./FamilyTreeGame";
 import MemoryGame from "./MemoryGame";
-import AskZekra from "./imgs/AskZekra1.png";
+import AskZekra from "./AskZekra";
+import AskZekra1 from "./imgs/AskZekra.png";
 import AppGuid from "./AppGuid";
 import './App.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -165,7 +166,7 @@ function App() {
     { title: "GPS", ar: "الموقع", page: "gps", img: "https://img.freepik.com/premium-vector/gps-icon-center-city-map-with-pin-location_99087-93.jpg" },
     { title: "Memories", ar: "الذكريات", page: "memories", img: "https://cdn-icons-png.freepik.com/512/3321/3321396.png" },
     { title: "Reminder", ar: "التذكير", page: "reminder", img: "https://cdn-icons-png.flaticon.com/512/2686/2686454.png" },
-    { title: "ASK ZEKRA", ar: "اسأل ذكرى", page: "askzekra", img: AskZekra },
+    { title: "ASK ZEKRA", ar: "اسأل ذكرى", page: "askzekra", img: AskZekra1 },
     { title: "App Guidence", ar: "دليل البرنامج", page: "appguid", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-cJr3EzIfHVIEnCG-Xnn71UrmfDauj-n4Ow&s.png" },
   ];
 
