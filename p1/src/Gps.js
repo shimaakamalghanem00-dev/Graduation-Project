@@ -654,7 +654,7 @@ function GPS({ lang, navigateTo, userType = "patient" }) {
       <AlertNotification alert={activeAlert} lang={lang} />
       <NavigationBar onBack={() => navigateTo("home")} lang={lang} />
       
-      {/* Real GPS Indicator */}
+      {/* Real GPS */}
       <div style={{
         background: "#e8f4f8",
         borderRadius: "12px",
@@ -680,7 +680,7 @@ function GPS({ lang, navigateTo, userType = "patient" }) {
         gridTemplateColumns: isFamily ? "1.5fr 1fr" : "1fr",
         gap: "1.8rem"
       }}>
-        {/* Map Section */}
+        {/* Map */}
         <div style={{
           background: "rgba(255,255,255,0.92)",
           borderRadius: "32px",

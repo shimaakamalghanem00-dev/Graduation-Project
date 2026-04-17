@@ -99,5 +99,3 @@ export default function ChatBot({ lang, navigateTo }) {
     </div>
   );
 }
-
-export default AskZekra;

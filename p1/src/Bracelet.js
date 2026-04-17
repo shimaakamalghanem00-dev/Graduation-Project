@@ -34,7 +34,7 @@ function Bracelet({ lang, navigateTo, userType = "patient" }) {
   const [showAddContact, setShowAddContact] = useState(false);
   const [newContact, setNewContact] = useState({ name: "", phone: "", relation: "" });
   
-  // Simulate battery drain
+  // Simulate battery 
   useEffect(() => {
     const batteryInterval = setInterval(() => {
       setBraceletStatus(prev => ({
