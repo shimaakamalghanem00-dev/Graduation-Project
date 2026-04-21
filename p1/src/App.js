@@ -25,7 +25,7 @@ import IMemories from "./iMemories";
 import Rmemories from "./Rmemories";
 import Acti from "./imgs/Acti.png";
 import GPSPhoto from "./imgs/GPSPhoto.png";
-import BreclatePhoto from "./imgs/BreclatePhoto.png";
+//import BreclatePhoto from "./imgs/BreclatePhoto.png";
 import VideoCall from "./videoCall";
 import VoiceCall from "./voiceCall";
 
@@ -163,7 +163,7 @@ function App() {
 
   const cards = [
     { title: "Activities", ar: "الأنشطة", page: "activities", img: Acti },
-    { title: "Bracelet", ar: "السوار", page: "bracelet", img: BreclatePhoto },
+    { title: "Bracelet", ar: "السوار", page: "bracelet", img: "https://cdn-icons-png.flaticon.com/512/3211/3211516.png" },
     { title: "Chat", ar: "الدردشة", page: "chat", img: "https://cdn-icons-png.freepik.com/512/1180/1180287.png" },
     { title: "GPS", ar: "الموقع", page: "gps", img: GPSPhoto },
     { title: "Memories", ar: "الذكريات", page: "memories", img: "https://cdn-icons-png.freepik.com/512/3321/3321396.png" },
