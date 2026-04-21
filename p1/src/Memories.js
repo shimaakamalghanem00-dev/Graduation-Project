@@ -61,7 +61,7 @@ function Memories({ lang, navigateTo, userType = "family" }) {
             <div className="mem-header-section">
                 <h1>
                     <i className="bi bi-heart-fill"></i>
-                    {lang === "en" ? "Memories" : "الذكريات"}
+                    {lang === "en" ? "Memories"  : "الذكريات"}
                 </h1>
                 <p>
                     {lang === "en"

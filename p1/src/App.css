@@ -2517,3 +2517,14 @@ input[type="date"]:invalid {
 .image-card.has-custom {
   border-color: #5a61ef;
 }
+.textguid{
+  text-align: center;
+  font-size: 20px;
+  color:#1b598b;
+}
+.appguid{
+  color:#efefef;
+}
+.descrip{
+  font-size: 18.5px;
+}

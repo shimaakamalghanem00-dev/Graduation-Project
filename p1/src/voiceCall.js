@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import Chat from "./Chat";
 function VoiceCall({ navigateTo }) {
 
   const [stream, setStream] = useState(null);
@@ -42,7 +42,7 @@ function VoiceCall({ navigateTo }) {
 
       {/* Avatar */}
       <img
-        src="https://i.pravatar.cc/150?img=5"
+        src="https://cutiedp.com/wp-content/uploads/2025/08/no-dp-image-5.webp"
         alt="profile"
         style={{
           width: "150px",
@@ -52,7 +52,7 @@ function VoiceCall({ navigateTo }) {
         }}
       />
 
-      <h2>Lucinda McGuire</h2>
+      <h2>Ahmed</h2>
       <p>Voice Call</p>
 
       {/* Buttons */}
