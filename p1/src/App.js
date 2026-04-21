@@ -23,7 +23,9 @@ import Vmemories from "./Vmemories";
 import AllMemories from "./allMemories";
 import IMemories from "./iMemories";
 import Rmemories from "./Rmemories";
-import Acti from "./imgs/Acti.png"
+import Acti from "./imgs/Acti.png";
+import GPSPhoto from "./imgs/GPSPhoto.png";
+import BreclatePhoto from "./imgs/BreclatePhoto.png";
 import VideoCall from "./videoCall";
 import VoiceCall from "./voiceCall";
 import MapPage from "./Gps";
@@ -169,9 +171,9 @@ function App() {
 
   const cards = [
     { title: "Activities", ar: "الأنشطة", page: "activities", img: Acti },
-    { title: "Bracelet", ar: "السوار", page: "bracelet", img: "https://cdn-icons-png.flaticon.com/512/3211/3211516.png" },
+    { title: "Bracelet", ar: "السوار", page: "bracelet", img: BreclatePhoto },
     { title: "Chat", ar: "الدردشة", page: "chat", img: "https://cdn-icons-png.freepik.com/512/1180/1180287.png" },
-    { title: "GPS", ar: "الموقع", page: "gps", img: "https://img.freepik.com/premium-vector/gps-icon-center-city-map-with-pin-location_99087-93.jpg" },
+    { title: "GPS", ar: "الموقع", page: "gps", img: GPSPhoto },
     { title: "Memories", ar: "الذكريات", page: "memories", img: "https://cdn-icons-png.freepik.com/512/3321/3321396.png" },
     { title: "Reminder", ar: "التذكير", page: "reminder", img: "https://cdn-icons-png.flaticon.com/512/2686/2686454.png" },
     { title: "ASK ZEKRA", ar: "اسأل ذكرى", page: "askzekra", img: AskZekra1 },
@@ -255,11 +257,11 @@ function App() {
       case "activities":
         return <Activities lang={lang} navigateTo={navigateTo} userType={user.type}/>;
       case "bracelet":
-        return <Bracelet lang={lang} navigateTo={navigateTo} />;
+        return <Bracelet lang={lang} navigateTo={navigateTo} userType={user.type}  />;
       case "chat":
         return <Chat lang={lang} navigateTo={navigateTo} />;
       case "gps":
-        return <GPS lang={lang} navigateTo={navigateTo} />;
+        return <GPS lang={lang} navigateTo={navigateTo} userType={user.type}/>;
       case "memories":
         return <Memories lang={lang} navigateTo={navigateTo} />;
       case "reminder":
