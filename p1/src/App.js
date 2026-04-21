@@ -1,11 +1,11 @@
-
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import Login from "./login";
 import Signup from "./signup";
 import ForgotPassword from "./ForgotPassword";
 import Activities from "./Activities";
 import Bracelet from "./Bracelet";
-import Chat from "./Chat";
+import Chat from "./ChatLayout";
 import GPS from "./Gps";
 import Memories from "./Memories";
 import Reminder from "./Reminder";
@@ -26,8 +26,16 @@ import Rmemories from "./Rmemories";
 import Acti from "./imgs/Acti.png"
 import VideoCall from "./videoCall";
 import VoiceCall from "./voiceCall";
+import MapPage from "./Gps";
+import ActivityGuid from "./ActivityGuid";
+import ASKZEKRAguid from "./ASKZEKRAguid"
+import Memoriesguid from "./Memoriesguid"
+
+
+
 
 function App() {
+   
   const [isLogin, setIsLogin] = useState(true);
   const [user, setUser] = useState(null); 
   const [lang, setLang] = useState("en");
@@ -187,6 +195,7 @@ function App() {
 
   if (!user) {
     return (
+      
       <>
         <div className="app-container">
           <div className="auth-header">
@@ -279,8 +288,18 @@ function App() {
         return <VideoCall lang={lang} navigateTo={navigateTo} />;
       case "VoiceCall":
         return <VoiceCall lang={lang} navigateTo={navigateTo} />;
+        case "ActivityGuid":
+        return <ActivityGuid lang={lang} navigateTo={navigateTo} />;
+        case "ASKZEKRAguid":
+        return <ASKZEKRAguid lang={lang} navigateTo={navigateTo} />;
+        case "Memoriesguid":
+        return <Memoriesguid lang={lang} navigateTo={navigateTo} />;
+        case "ChatLayout":
+        return <Chat lang={lang} navigateTo={navigateTo} />;
+        
         default:
         return (
+          
           <div dir={lang === "ar" ? "rtl" : "ltr"}>
             <nav className="navbar navbar-light bg-light">
               <div className="container-fluid">
@@ -426,6 +445,8 @@ function App() {
                       >
                         <i className="bi bi-facebook" style={{ fontSize: "18px", color: "#4267B2" }}></i>
                       </a>
+                      </div>
+                       <div className="mt-3"> 
                       <a
                         href="https://instagram.com"
                         target="_blank"
@@ -434,6 +455,8 @@ function App() {
                       >
                         <i className="bi bi-instagram" style={{ fontSize: "18px", color: "#E1306C" }}></i>
                       </a>
+                      </div>
+                      <div className="mt-3"> 
                       <a
                         href="https://twitter.com"
                         target="_blank"
@@ -457,6 +480,7 @@ function App() {
   };
 
   return renderPage();
+  return <MapPage />;
 }
 
 export default App;

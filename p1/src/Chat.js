@@ -1,40 +1,145 @@
-import "bootstrap-icons/font/bootstrap-icons.css";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef  } from "react";
 import EmojiPicker from "emoji-picker-react";
-
-function Chat({ lang, navigateTo }) {
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Hello 👋", sender: "other", time: "1:20 PM" },
-    { id: 2, text: "Hi! How are you?", sender: "me", time: "1:21 PM" },
-  ]);
-  
-
-
-
-  const [newMessage, setNewMessage] = useState("");
-
+import { FiPhone, FiVideo } from "react-icons/fi";
+import { FiMic } from "react-icons/fi";
+import { FiSmile } from "react-icons/fi";
+import CallControls from "./callcontrol";
+function Chat({ chats, setChats, selectedChatId, navigateTo }){
+  const currentChat = chats.find((c) => c.id === selectedChatId);
   const [showEmoji, setShowEmoji] = useState(false);
-
-  const [isRecording, setIsRecording] = useState(false);
-
-  const [mediaRecorder, setMediaRecorder] = useState(null);
-
-  const [audioChunks, setAudioChunks] = useState([]);
- 
   const [showMenu, setShowMenu] = useState(false);
-  const menuRef = useRef(null);
-
+  
   const onEmojiClick = (emojiData) => {
   setNewMessage((prev) => prev + emojiData.emoji);
-  setShowEmoji(false);
 };
+ 
+  const messages = currentChat?.messages || [];
+const [isRecording, setIsRecording] = useState(false);
+const [mediaRecorder, setMediaRecorder] = useState(null);
+const [audioChunks, setAudioChunks] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+ const mediaRecorderRef = useRef(null);
+const chunksRef = useRef([]);
+
+
+const startRecording = async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+  const recorder = new MediaRecorder(stream);
+
+  chunksRef.current = [];  
+
+  recorder.ondataavailable = (e) => {
+    if (e.data.size > 0) {
+      chunksRef.current.push(e.data);
+    }
+  };
+
+  recorder.onstop = () => {
+    if (chunksRef.current.length === 0) return;  
+
+    const audioBlob = new Blob(chunksRef.current, {
+      type: "audio/webm",
+    });
+
+    const newMsg = {
+      id: Date.now(),
+      audio: audioBlob,
+      sender: "me",
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      seen: false,
+    };
+
+    addMessage(newMsg);  
+
+    chunksRef.current = [];  
+  };
+
+  recorder.start();
+
+  mediaRecorderRef.current = recorder;
+  setIsRecording(true);
+};
+
+
+const stopRecording = () => {
+  if (
+    mediaRecorderRef.current &&
+    mediaRecorderRef.current.state !== "inactive"
+  ) {
+    mediaRecorderRef.current.stop();
+    setIsRecording(false);
+  }
+};
+
+const deleteMessage = (msgId) => {
+  setChats((prev) =>
+    prev.map((chat) =>
+      chat.id === selectedChatId
+        ? {
+            ...chat,
+            messages: chat.messages.filter((m) => m.id !== msgId),
+          }
+        : chat
+    )
+  );
+};
+
+
+const sendBtn = {
+   height:"50px",
+   width:"1300px",
+  justifyContent: "center",
+  alignItems: "center",
+                 
+     
+   
+    
+};
+
+const addMessage = (newMsg) => {
+  setChats((prev) =>
+    prev.map((chat) =>
+      chat.id === selectedChatId
+        ? {
+            ...chat,
+            messages: [...chat.messages, newMsg],
+          }
+        : chat
+    )
+  );
+};
+
+ const sendMessage = () => {
+  if (!newMessage.trim()) return;
+
+  const newMsg = {
+    id: Date.now(),
+    text: newMessage,
+    sender: "me",
+    time: new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+    seen: false,
+  };
+
+ 
+  addMessage(newMsg);
+
+  setNewMessage("");
+};
+
 const handleFileUpload = (event) => {
   const file = event.target.files[0];
   if (!file) return;
 
   const newMsg = {
     id: Date.now(),
-    file: file,
+    file,
     sender: "me",
     time: new Date().toLocaleTimeString([], {
       hour: "2-digit",
@@ -42,475 +147,315 @@ const handleFileUpload = (event) => {
     }),
   };
 
-  setMessages((prev) => [...prev, newMsg]);
+  addMessage(newMsg);
 };
+ 
 
-  const sendMessage = () => {
-    if (!newMessage.trim()) return;
+ 
 
-    const newMsg = {
-      id: Date.now(),
-      text: newMessage,
-      sender: "me",
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    };
-
-    setMessages([...messages, newMsg]);
-    setNewMessage("");
-  };
-
-  const startRecording = async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-    const recorder = new MediaRecorder(stream);
-    setMediaRecorder(recorder);
-
-    const chunks = [];
-
-    recorder.ondataavailable = (event) => {
-      chunks.push(event.data);
-    };
-
-    recorder.onstop = () => {
-      const audioBlob = new Blob(chunks, { type: "audio/webm" });
-
-      const newMsg = {
-        id: Date.now(),
-        audio: audioBlob,
-        sender: "me",
-        time: new Date().toLocaleTimeString(),
-        seen: true
-      };
-
-      setMessages((prev) => [...prev, newMsg]);
-    };
-
-    recorder.start();
-    setIsRecording(true);
-    setAudioChunks(chunks);
-
-  } catch (error) {
-    console.error("Microphone access denied", error);
-  }
-};
-const stopRecording = () => {
-  if (mediaRecorder) {
-    mediaRecorder.stop();
-    setIsRecording(false);
-  }
-};
-
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (menuRef.current && !menuRef.current.contains(event.target)) {
-      setShowMenu(false);
-    }
-  };
-
-  document.addEventListener("mousedown", handleClickOutside);
-
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, []);
-
-
-
+ 
   return (
+    
     <div
-      dir={lang === "ar" ? "rtl" : "ltr"}
       style={{
-        height: "100vh",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
-        background: "#f4f6f9",
       }}
     >
-      {/* ===== NAVBAR ===== */}
-       <div dir={lang === "ar" ? "rtl" : "ltr"}>
-      <nav className="navbar navbar-light bg-light">
-        <div className="container-fluid">
-          <span className="navbarbrand fw-bold" style={{ cursor: 'pointer' }} onClick={() => navigateTo("home")}>ZEKRA</span>
-          <button 
-            className="btn btn-outline-primary"
-            onClick={() => navigateTo("home")}
-          >
-            {lang === "en" ? "Back to Home" : "العودة للرئيسية"}
-          </button>
-        </div>
-      </nav>
-</div>
-      {/* ===== CHAT CONTAINER (FULL SCREEN) ===== */}
-      <div
-        className="d-flex flex-column"
-        style={{
-          height: "calc(100vh - 56px)",
-          width: "100%",
-          background: "#fff",
-        }}
-      >
-        {/* ===== HEADER ===== */}
-        <div className="d-flex justify-content-between align-items-center p-3 border-bottom">
-
-        {/* USER INFO */}
-        <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "10px"
-        }}
-      >
-          <img
-            src="https://i.pravatar.cc/150?img=5"
-            alt="profile"
-            style={{
-              width: "45px",
-              height: "45px",
-              borderRadius: "50%",
-              objectFit: "cover"
-            }}
-          />
-
-          <div>
-            <div className="fw-bold">Lucinda McGuire</div>
-            <small className="text-success">Online</small>
-          </div>
-        </div>
-
-  {/* ACTION BUTTONS */}
-  <div className="d-flex align-items-center gap-2 ms-auto" 
-  style={{ display: "flex", alignItems: "center", marginInlineStart: "1400px", gap: "10px" }}
-   >
-
-  <button onClick={() => navigateTo("VoiceCall")}
-    className="btn btn-light rounded-circle"
-    style={{
-      width: "40px",
-      height: "40px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    }}
-  >
-    
-    <i className="bi bi-telephone"></i>
-  </button>
- 
-  <button
-  onClick={() => navigateTo("VideoCall")}
-    className="btn btn-light rounded-circle"
-    
-    style={{
-      width: "40px",
-      height: "40px",
-       display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    }}
-  >
-    <i className="bi bi-camera-video"></i>
-  </button>
- 
-  <button
-    className="btn btn-light rounded-circle"
-    onClick={() => setShowMenu(!showMenu)}
-    style={{
-      width: "40px",
-      height: "40px",
-       display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    }}
-  >
-    <i className="bi bi-three-dots-vertical"></i>
-  </button>
-<br></br>
-</div>
-
-</div>
-         
-       {/* ===== MESSAGES AREA ===== */}
-<div
-  className="flex-grow-1 p-4"
+      {/* HEADER */}
+     <div
   style={{
-    overflowY: "auto",
-    backgroundColor: "#f3eef5",
     display: "flex",
-    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-between", // 🔥 KEY
+    padding: "10px 15px",
+    borderBottom: "1px solid #ddd",
+    
+    color: "#fff",
   }}
 >
-  {messages.map((msg) => {
-    const isSender = msg.sender === "me";
 
-    return (
-      <div
-        key={msg.id}
-        style={{
-          display: "flex",
-          justifyContent: isSender ? "flex-end" : "flex-start",
-          marginBottom: "18px",
-          direction: "ltr",
-        }}
-      >
+  <div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+  }}
+>
+ {/* PROFILE IMAGE */}
+  <img
+    src="https://cutiedp.com/wp-content/uploads/2025/08/no-dp-image-5.webp"  // 🔥 temporary avatar
+    alt="profile"
+    style={{
+      width: "40px",
+      height: "40px",
+      borderRadius: "50%",    
+      objectFit: "cover",
+    }}
+  />
+
+  {/* NAME */}
+  <div style={{ fontWeight: "bold", fontSize: "16px" }}>
+    {currentChat?.name}
+  </div>
+
+</div>
+
+  {/* RIGHT: CALL BUTTONS */}
+  <div style={{ display: "flex", gap: "10px" }}>
+
+    <button
+      onClick={() => navigateTo("VoiceCall")}
+      className="btn btn-light rounded-circle"
+      style={{
+        width: "36px",
+        height: "36px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      <i className="bi bi-telephone"></i>
+    </button>
+
+    <button
+      onClick={() => navigateTo("VideoCall")}
+      className="btn btn-light rounded-circle"
+      style={{
+        width: "36px",
+        height: "36px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      <i className="bi bi-camera-video"></i>
+    </button>
+
+  </div>
+</div>
+
+      {/* MESSAGES */}
+       
+        <div
+    style={{
+    flex: 1,
+    padding: "20px",
+    overflowY: "auto",
+    background: "#f1ebeb",
+  }}
+>
+  {messages.length === 0 ? (
+    <div style={{ textAlign: "center", color: "#888" }}>
+      Start chatting 💬
+    </div>
+  ) : (
+    messages.map((msg) => {
+      const isMe = msg.sender === "me";
+
+      return (
+        <div
+  key={msg.id}
+  onDoubleClick={() => deleteMessage(msg.id)} 
+  style={{
+    display: "flex",
+    justifyContent: isMe ? "flex-end" : "flex-start",
+    marginBottom: "10px",
+    cursor: "pointer",
+  }}
+  
+>
+  
+          <div
+            style={{
+              background: isMe ? "#dca1fa" : "#901ee7",
+              padding: "8px 10px",
+              borderRadius: "12px",
+              maxWidth: "80%",    
+              width: "fit-content",       
+              display: "inline-block",
+            }}
+          >
+            {/* TEXT + AUDIO */}
+            <div>
+             <div>
+  
+  {msg.text && <div>{msg.text}</div>}
+
+   
+  {msg.file && msg.file.type.startsWith("image/") && (
+    <img
+      src={URL.createObjectURL(msg.file)}
+      alt="sent"
+      style={{
+        maxWidth: "200px",
+        borderRadius: "10px",
+        marginTop: "5px",
+      }}
+    />
+  )}
+
+   
+  {msg.file && msg.file.type.startsWith("video/") && (
+    <video
+      controls
+      src={URL.createObjectURL(msg.file)}
+      style={{
+       maxWidth: "320px",
+        borderRadius: "10px",
+        marginTop: "5px",
+      }}
+    />
+  )}
+
+ 
+   
+
+  {/* 📎 OTHER FILE */}
+  {msg.file &&
+    !msg.file.type.startsWith("image/") &&
+    !msg.file.type.startsWith("video/") && (
+      <div style={{ marginTop: "5px" }}>
+        📎 {msg.file.name}
+      </div>
+    )}
+</div>
+
+              {msg.audio && (
         <div
           style={{
-            backgroundColor: isSender ? "#7c1165" : "#ffffff",
-            color: isSender ? "#fff" : "#000",
-            padding: "10px 16px",
-            borderRadius: "20px",
-            maxWidth: "60%",
-            width: "fit-content",
-            wordBreak: "break-word",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+            display: "flex",
+            alignItems: "center",
+            gap: "5px",
+            maxWidth: "300px",     // 🔥 smaller width
           }}
         >
-          {/* MESSAGE TEXT */}
-
-
-          <div>
-             
-
-        {msg.audio && (
           <audio
             controls
             src={URL.createObjectURL(msg.audio)}
             style={{
-              marginTop: "5px",
-              width: "200px"
+              width: "250px",
+              height: "25px",      // 🔥 smaller height
             }}
           />
-        )}
-      </div>
-                <div>{msg.text}</div>
-            {msg.file && (
-        msg.file.type.startsWith("image/") ? (
-          <img
-            src={URL.createObjectURL(msg.file)}
-            alt="upload"
-            style={{
-              maxWidth: "200px",
-              borderRadius: "10px",
-              marginTop: "5px"
-            }}
-          />
-         ) : (
-    <div
-      style={{
-        padding: "8px",
-        background: "#eee",
-        borderRadius: "10px",
-        marginTop: "5px",
-        color: "#000"
-      }}
-    >
-      📎 {msg.file.name}
-    </div>
-  )
+        </div>
 )}
+            </div>
 
-          {/* TIME + SEEN STATUS */}
-          
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              gap: "5px",
-              marginTop: "4px",
-            }}
-          >
-            <small
+            {/* TIME + STATUS */}
+            <div
               style={{
-                fontSize: "11px",
-                opacity: 0.7,
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                gap: "5px",
+                marginTop: "5px",
               }}
             >
-              {msg.time}
-            </small>
+              <span style={{ fontSize: "11px", color: "#555" }}>
+                {msg.time}
+              </span>
 
-            {isSender && (
-              msg.seen ? (
-                <i
-                  className="bi bi-check2-all"
-                  style={{ fontSize: "12px", color: "#4fc3f7" }}
-                ></i>
-              ) : (
-                <i
-                  className="bi bi-check2"
-                  style={{ fontSize: "12px", opacity: 0.7 }}
-                ></i>
-              )
-            )}
+              {isMe && (
+                <span style={{ fontSize: "12px" }}>
+                  {msg.seen ? "✔✔" : "✔"}
+                </span>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    );
-  })}
+      );
+    })
+  )}
 </div>
-    <video
-  id="localVideo"
-  autoPlay
-  playsInline
-  style={{
-    width: "250px",
-    borderRadius: "10px",
-    display: "none"
-  }}
-></video>     
-    {/* ===== INPUT AREA ===== */}
-    
-<div
-  style={{
-    padding: "12px",
-    borderTop: "1px solid #ddd",
-    backgroundColor: "#ffffff",
-  }}
->
+      {/* INPUT */}
+      {showEmoji && (
   <div
     style={{
-      display: "flex",
-      alignItems: "center",
-      gap: "10px",
+      position: "absolute",
+      bottom: "70px",
+      left: "20px",
+      zIndex: 1000,
     }}
   >
-   <input
-  type="file"
-  id="fileUpload"
-  style={{ display: "none" }}
-  onChange={handleFileUpload}
-/>
-    {/* PLUS BUTTON */}
-    <button
-  className="btn btn-light rounded-circle"
-  onClick={() => document.getElementById("fileUpload").click()}
-  style={{
-    width: "40px",
-    height: "40px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }}
->
-  <i className="bi bi-plus-lg"></i>
-</button>
-
-    {/* EMOJI BUTTON */}
-    <button
-  className="btn btn-light rounded-circle"
-  onClick={() => setShowEmoji(!showEmoji)}
-  style={{
-    width: "40px",
-    height: "40px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }}
->
-  <i className="bi bi-emoji-smile"></i>
-</button>
-
-    {/* INPUT FIELD */}
-    <input
-      type="text"
-      placeholder={lang === "en" ? "Type your message..." : "اكتب رسالتك..."}
-      value={newMessage}
-      onChange={(e) => setNewMessage(e.target.value)}
-      onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-      style={{
-        flex: 1,
-        padding: "10px 15px",
-        borderRadius: "25px",
-        border: "1px solid #ccc",
-        outline: "none",
-      }}
-    />
-
-    {/* SEND / MIC BUTTON */}
-    <button
-  className="btn btn-primary rounded-circle"
-  onClick={
-    newMessage.trim()
-      ? sendMessage
-      : isRecording
-      ? stopRecording
-      : startRecording
-  }
-  style={{
-    width: "45px",
-    height: "45px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
-  }}
->
-  {newMessage.trim() ? (
-    <i className="bi bi-send"></i>
-  ) : isRecording ? (
-    <i className="bi bi-stop"></i>
-  ) : (
-    <i className="bi bi-mic"></i>
-  )}
-</button>
-
-  </div>
-</div>
-{showEmoji && (
-  <div style={{ position: "absolute", bottom: "70px", left: "20px" }}>
     <EmojiPicker onEmojiClick={onEmojiClick} />
   </div>
 )}
-{showMenu && (
-  <div
-    ref={menuRef}
-    style={{
-      position: "absolute",
-      top: "60px",
-      right: "20px",
-      background: "#fff",
-      border: "1px solid #ddd",
-      borderRadius: "8px",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-      width: "180px",
-      overflow: "hidden",
-      zIndex: 100
-    }}
-  >
-    <div
-      style={{ padding: "10px", cursor: "pointer" }}
-      onClick={() => alert("Search in chat")}
-    >
-      🔍 Search in chat
-    </div>
+      <div
+  style={{
 
-    <div
-      style={{ padding: "10px", cursor: "pointer" }}
-      onClick={() => alert("Edit name")}
-    >
-      ✏️ Edit name
-    </div>
+     
+    padding: "10px",
+    borderTop: "1px solid #ddd",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    background: "#f0f2f5",
+  }}
+>
+  
+  <button onClick={() => document.getElementById("fileUpload").click()} style={{
+        height:"50px",
+   width:"1300px",             
+    justifyContent: "center",      
+    alignItems: "center",          
 
-    <div
-      style={{ padding: "10px", cursor: "pointer", color: "red" }}
-      onClick={() => alert("User blocked")}
-    >
-      🚫 Block
-    </div>
-    <div
-      style={{ padding: "10px", cursor: "pointer", color: "red" }}
-      onClick={() => alert("User blocked")}
-    >
-      🚫 Unblock 
-    </div>
-  </div>
-)}
-     </div>
+    border: "none",
+    cursor: "pointer",
+     
+    }} >
+  +
+</button>
+   
+  <button onClick={() => setShowEmoji(!showEmoji)} style={{
+        height:"50px",
+   width:"1300px",
+                     
+    justifyContent: "center",      
+    alignItems: "center",          
+
+    border: "none",
+    cursor: "pointer",
+     
+    }} >
+    <FiSmile size={20}  />
+     
+</button>
+<input
+  type="file"
+  id="fileUpload"
+  accept="image/*,video/*"
+  style={{ display: "none" }}
+  onChange={handleFileUpload}
+/>
+
+
+ 
+
+
+
+  {/* INPUT */}
+   
+<input
+  value={newMessage}  
+  onChange={(e) => setNewMessage(e.target.value)}  
+  placeholder="Type a message..."
+  style={{width:"20000px"}}
+/>
+  {/* SEND / MIC */}
+  <button
+  style={sendBtn}
+  onMouseDown={!newMessage.trim() ? startRecording : null}
+  onMouseUp={!newMessage.trim() ? stopRecording : null}
+  onClick={newMessage.trim() ? sendMessage : null}
+    
+>
+  {newMessage.trim() ? "➤" : isRecording ?(<span style={{ color: "red" }}>●</span>
+)  : <FiMic size={22}  color="white" />}
+</button>
+</div>
     </div>
   );
-  
 }
-
 export default Chat;
