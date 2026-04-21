@@ -168,7 +168,7 @@ const handleFileUpload = (event) => {
   style={{
     display: "flex",
     alignItems: "center",
-    justifyContent: "space-between", // 🔥 KEY
+    justifyContent: "space-between",  
     padding: "10px 15px",
     borderBottom: "1px solid #ddd",
     
