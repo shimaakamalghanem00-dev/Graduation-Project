@@ -50,19 +50,19 @@ function ChatList({ chats, setSelectedChatId }) {
         >
           <div style={{ fontWeight: "bold" }}>{chat.name}</div>
           <small style={{ color: "#666" }}>
-  {chat.messages && chat.messages.length > 0
-    ? (() => {
-        const last = chat.messages[chat.messages.length - 1];
+            {chat.messages && chat.messages.length > 0
+              ? (() => {
+                  const last = chat.messages[chat.messages.length - 1];
 
-        if (last.text) return last.text;
-        if (last.audio) return "🎤 Voice message";
-         
-        if (last.file?.type.startsWith("image/")) return "🖼 Photo";
-        if (last.file?.type.startsWith("video/")) return "🎥 Video";
-        return "";
-      })()
-    : "Start chatting..."}
-</small>
+                  if (last.text) return last.text;
+                  if (last.audio) return "🎤 Voice message";
+                  
+                  if (last.file?.type.startsWith("image/")) return "🖼 Photo";
+                  if (last.file?.type.startsWith("video/")) return "🎥 Video";
+                  return "";
+                })()
+              : "Start chatting..."}
+          </small>
         </div>
       ))}
 

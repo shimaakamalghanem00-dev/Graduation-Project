@@ -1,106 +1,3 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-
-/* Fix marker icon problem */
-import icon from "leaflet/dist/images/marker-icon.png";
-import iconShadow from "leaflet/dist/images/marker-shadow.png";
-
-let DefaultIcon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow
-});
-
-L.Marker.prototype.options.icon = DefaultIcon;
-
-/* Component to move map when position changes */
-function ChangeView({ center }) {
-  const map = useMap();
-  map.setView(center, 13);
-  return null;
-}
-
-function GPS({ lang, navigateTo }) {
-
-  const [position, setPosition] = useState([30.0444, 31.2357]);
-  const [search, setSearch] = useState("");
-
-  /* Get device current location */
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        setPosition([
-          pos.coords.latitude,
-          pos.coords.longitude
-        ]);
-      });
-    }
-  }, []);
-
-  /* Search location */
-  const searchLocation = async () => {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${search}`;
-    const res = await fetch(url);
-    const data = await res.json();
-
-    if (data.length > 0) {
-      const lat = parseFloat(data[0].lat);
-      const lon = parseFloat(data[0].lon);
-      setPosition([lat, lon]);
-    }
-  };
-
-  return (
-    <div dir={lang === "ar" ? "rtl" : "ltr"}>
-
-      {/* Navbar */}
-      <nav className="navbar navbar-light bg-light">
-        <div className="container-fluid">
-          <span
-            className="navbarbrand fw-bold"
-            style={{ cursor: "pointer" }}
-            onClick={() => navigateTo("home")}
-          >
-            ZEKRA
-          </span>
-
-          <button
-            className="btn btn-outline-primary"
-            onClick={() => navigateTo("home")}
-          >
-            {lang === "en" ? "Back to Home" : "العودة للرئيسية"}
-          </button>
-        </div>
-      </nav>
-
-      <div className="container mt-4">
-
-        <p>
-          {lang === "en"
-            ? "Track your location and find nearby places."
-            : "تتبع موقعك واعثر على الأماكن القريبة."}
-        </p>
-
-        {/* Search bar */}
-        <div className="d-flex mb-3">
-          <input
-            type="text"
-            className="form-control"
-            placeholder={lang === "en" ? "Search location..." : "ابحث عن موقع"}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-
-          <button
-            className="btn btn-primary ms-2"
-            onClick={searchLocation}
-          >
-            {lang === "en" ? "Search" : "بحث"}
-          </button>
-        </div>
-=======
 import React, { useState, useEffect, useRef, useCallback } from "react";
 
 // Constants 
@@ -342,7 +239,7 @@ const LocationMap = ({ location, safeZone, lang, onMapReady }) => {
         .bindTooltip(lang === "en" ? "📍 Your Location" : "📍 موقعك", { permanent: false });
     }
     
-    // Draw safe zone circle
+    //safe zone circle
     circleRef.current = window.L.circle([safeZone.center.lat, safeZone.center.lng], {
       color: '#2c7da0',
       fillColor: '#9b8fd9',
@@ -582,24 +479,23 @@ const SOSButton = ({ onPress, lang }) => (
       background: "linear-gradient(135deg, #dc3545, #ff6b6b)",
       border: "none",
       borderRadius: "50px",
-      padding: "1.2rem",
-      fontSize: "1.3rem",
-      fontWeight: 700,
+      padding: "1rem",
+      fontSize: "1.1rem",
+      fontWeight: 600,
       color: "white",
       cursor: "pointer",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      gap: "0.8rem",
-      boxShadow: "0 8px 25px rgba(220,53,69,0.4)",
+      gap: "0.6rem",
+      boxShadow: "0 4px 15px rgba(220,53,69,0.3)",
       width: "100%",
-      transition: "transform 0.2s ease",
-      marginTop: "1rem"
+      transition: "transform 0.2s ease"
     }}
     onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
     onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
   >
-    <i className="bi bi-sos"></i>
+    <i className="bi bi-sos" style={{ fontSize: "1.3rem" }}></i>
     {lang === "en" ? "SOS - Call for Help" : "SOS - طلب مساعدة"}
   </button>
 );
@@ -757,7 +653,7 @@ function GPS({ lang, navigateTo, userType = "patient" }) {
       <AlertNotification alert={activeAlert} lang={lang} />
       <NavigationBar onBack={() => navigateTo("home")} lang={lang} />
       
-      {/* Real GPS */}
+      {/* Real GPS Info Bar */}
       <div style={{
         background: "#e8f4f8",
         borderRadius: "12px",
@@ -777,145 +673,130 @@ function GPS({ lang, navigateTo, userType = "patient" }) {
         </span>
       </div>
       
-      {/* Main Grid */}
+      {/* Map Section - Full width for both views */}
       <div style={{
-        display: "grid",
-        gridTemplateColumns: isFamily ? "1.5fr 1fr" : "1fr",
-        gap: "1.8rem"
+        background: "rgba(255,255,255,0.92)",
+        borderRadius: "32px",
+        boxShadow: "0 20px 35px -12px rgba(0,0,0,0.2)",
+        overflow: "hidden",
+        marginBottom: "2rem"
       }}>
-        {/* Map */}
         <div style={{
-          background: "rgba(255,255,255,0.92)",
-          borderRadius: "32px",
-          boxShadow: "0 20px 35px -12px rgba(0,0,0,0.2)",
-          overflow: "hidden"
+          padding: "1.2rem 1.5rem",
+          background: "white",
+          borderBottom: "2px solid #eef2ff"
         }}>
-          <div style={{
-            padding: "1.2rem 1.5rem",
-            background: "white",
-            borderBottom: "2px solid #eef2ff"
-          }}>
-            <h2 style={{
-              fontSize: "1.5rem",
-              fontWeight: 700,
-              color: "#1f3b4c",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              flexWrap: "wrap"
-            }}>
-              <i className="bi bi-geo-alt-fill" style={{ color: "#2c7da0" }}></i>
-              {isFamily 
-                ? (lang === "en" ? "Real-time Patient Location" : "موقع المريض لحظياً")
-                : (lang === "en" ? "Your Current Location" : "موقعك الحالي")
-              }
-              <span className="live-badge" style={{
-                background: "#e63946",
-                color: "white",
-                fontSize: "0.7rem",
-                fontWeight: 600,
-                padding: "0.2rem 0.7rem",
-                borderRadius: "40px"
-              }}>LIVE</span>
-            </h2>
-          </div>
-          
-          <LocationMap 
-            location={location} 
-            safeZone={SAFE_ZONE}
-            lang={lang}
-            onMapReady={() => {}}
-          />
-          
-          <div style={{
-            padding: "0.8rem 1.2rem",
-            background: "#f9fafc",
-            fontSize: "0.8rem",
-            color: "#3b5c6e",
-            borderTop: "1px solid #e9edf2",
+          <h2 style={{
+            fontSize: "1.5rem",
+            fontWeight: 700,
+            color: "#1f3b4c",
             display: "flex",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "0.5rem"
+            alignItems: "center",
+            gap: "0.5rem",
+            flexWrap: "wrap"
           }}>
-            <span><i className="bi bi-satellite"></i> GPS: {location?.accuracy ? `±${location.accuracy}m` : "Acquiring..."}</span>
-            <span><i className="bi bi-wifi"></i> 12 satellites connected</span>
-          </div>
+            <i className="bi bi-geo-alt-fill" style={{ color: "#2c7da0" }}></i>
+            {isFamily 
+              ? (lang === "en" ? "Real-time Patient Location" : "موقع المريض لحظياً")
+              : (lang === "en" ? "Your Current Location" : "موقعك الحالي")
+            }
+            <span className="live-badge" style={{
+              background: "#e63946",
+              color: "white",
+              fontSize: "0.7rem",
+              fontWeight: 600,
+              padding: "0.2rem 0.7rem",
+              borderRadius: "40px"
+            }}>LIVE</span>
+          </h2>
         </div>
         
-        {/* Right Panel */}
-        {isFamily ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            <LocationInfoCard 
-              location={location}
-              address={address}
-              isInsideSafeZone={isInsideSafeZone}
-              distance={distance}
-              lastUpdate={lastUpdate}
-              lang={lang}
-            />
-            <BraceletStatusCard 
-              batteryLevel={batteryLevel}
-              braceletRemoved={braceletRemoved}
-              lang={lang}
-            />
-            
-            {/* Alert History for Family */}
-            {alertHistory.length > 0 && (
-              <div style={{
-                background: "white",
-                borderRadius: "32px",
-                padding: "1.5rem",
-                boxShadow: "0 12px 28px -8px rgba(0,0,0,0.1)"
-              }}>
-                <div style={{
-                  fontSize: "1.2rem",
-                  fontWeight: 700,
-                  color: "#1e3a4b",
-                  borderLeft: "5px solid #9B8FD9",
-                  paddingLeft: "1rem",
-                  marginBottom: "1rem"
+        <LocationMap 
+          location={location} 
+          safeZone={SAFE_ZONE}
+          lang={lang}
+          onMapReady={() => {}}
+        />
+        
+        <div style={{
+          padding: "0.8rem 1.2rem",
+          background: "#f9fafc",
+          fontSize: "0.8rem",
+          color: "#3b5c6e",
+          borderTop: "1px solid #e9edf2",
+          display: "flex",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "0.5rem"
+        }}>
+          <span><i className="bi bi-satellite"></i> GPS: {location?.accuracy ? `±${location.accuracy}m` : "Acquiring..."}</span>
+          <span><i className="bi bi-wifi"></i> 12 satellites connected</span>
+        </div>
+      </div>
+      
+      {/* Cards Grid */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+        gap: "1.8rem",
+        marginBottom: "1.8rem"
+      }}>
+        <LocationInfoCard 
+          location={location}
+          address={address}
+          isInsideSafeZone={isInsideSafeZone}
+          distance={distance}
+          lastUpdate={lastUpdate}
+          lang={lang}
+        />
+        <BraceletStatusCard 
+          batteryLevel={batteryLevel}
+          braceletRemoved={braceletRemoved}
+          lang={lang}
+        />
+        
+        {/* Show Alert History */}
+        {isFamily && alertHistory.length > 0 && (
+          <div style={{
+            background: "white",
+            borderRadius: "32px",
+            padding: "1.5rem",
+            boxShadow: "0 12px 28px -8px rgba(0,0,0,0.1)"
+          }}>
+            <div style={{
+              fontSize: "1.2rem",
+              fontWeight: 700,
+              color: "#1e3a4b",
+              borderLeft: "5px solid #9B8FD9",
+              paddingLeft: "1rem",
+              marginBottom: "1rem"
+            }}>
+              <i className="bi bi-clock-history"></i> {lang === "en" ? "Alert History" : "سجل الإنذارات"}
+            </div>
+            <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+              {alertHistory.slice(0, 5).map(alert => (
+                <div key={alert.id} style={{
+                  padding: "0.6rem",
+                  borderBottom: "1px solid #eee",
+                  backgroundColor: alert.type === "emergency" ? "#fff3f0" : alert.type === "geofence" ? "#fff9e6" : "#e8f5e9",
+                  borderRadius: "8px",
+                  marginBottom: "0.5rem"
                 }}>
-                  <i className="bi bi-clock-history"></i> {lang === "en" ? "Alert History" : "سجل الإنذارات"}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.3rem" }}>
+                    <span style={{ fontSize: "0.85rem" }}>{alert.message}</span>
+                    <span style={{ fontSize: "0.7rem", color: "#666" }}>{alert.time}</span>
+                  </div>
                 </div>
-                <div style={{ maxHeight: "200px", overflowY: "auto" }}>
-                  {alertHistory.slice(0, 5).map(alert => (
-                    <div key={alert.id} style={{
-                      padding: "0.6rem",
-                      borderBottom: "1px solid #eee",
-                      backgroundColor: alert.type === "emergency" ? "#fff3f0" : alert.type === "geofence" ? "#fff9e6" : "#e8f5e9",
-                      borderRadius: "8px",
-                      marginBottom: "0.5rem"
-                    }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.3rem" }}>
-                        <span style={{ fontSize: "0.85rem" }}>{alert.message}</span>
-                        <span style={{ fontSize: "0.7rem", color: "#666" }}>{alert.time}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            <LocationInfoCard 
-              location={location}
-              address={address}
-              isInsideSafeZone={isInsideSafeZone}
-              distance={distance}
-              lastUpdate={lastUpdate}
-              lang={lang}
-            />
-            <BraceletStatusCard 
-              batteryLevel={batteryLevel}
-              braceletRemoved={braceletRemoved}
-              lang={lang}
-            />
-            <SOSButton onPress={handleSOS} lang={lang} />
+              ))}
+            </div>
           </div>
         )}
       </div>
+      
+      {/* SOS Button */}
+      {!isFamily && (
+        <SOSButton onPress={handleSOS} lang={lang} />
+      )}
       
       <RefreshButton onPress={handleRefreshLocation} lang={lang} />
       
@@ -924,33 +805,7 @@ function GPS({ lang, navigateTo, userType = "patient" }) {
         {lang === "en" 
           ? "Secure GPS tracking • Powered by Zekra monitoring system"
           : "تتبع GPS آمن • يعمل بنظام مراقبة ذكرى"}
->>>>>>> 1dd3215f20874b316df7171a46cb2c59425abf3d
       </div>
-
-      {/* Map */}
-      <div style={{ height: "500px", width: "100%" }}>
-        <MapContainer
-          center={position}
-          zoom={13}
-          style={{ height: "100%", width: "100%" }}
-        >
-
-          <ChangeView center={position} />
-
-          <TileLayer
-            attribution="&copy; OpenStreetMap contributors"
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-
-          <Marker position={position}>
-            <Popup>
-              {lang === "en" ? "Selected Location" : "الموقع المحدد"}
-            </Popup>
-          </Marker>
-
-        </MapContainer>
-      </div>
-
     </div>
   );
 }
