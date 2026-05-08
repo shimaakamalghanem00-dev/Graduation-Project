@@ -130,6 +130,28 @@ function AppGuid({ lang, navigateTo }) {
   </div>
 </div>
 
+<div className="container mt-4">
+
+  <div className="mb-4">
+    <div className="card" onClick={() => navigateTo("CommunityGuid")}>
+      <div className="card-body">
+        <h5 className="card-title">
+          {lang === "en" ? "Community" : "المجتمع"}
+        </h5>
+        <p className="card-text">
+          {lang === "en"
+            ? "A safe group space where Alzheimer's patients connect, share experiences, and support each other."
+            : "مساحة جماعية آمنة يتواصل فيها مرضى الزهايمر ويتشاركون تجاربهم ويدعمون بعضهم."}
+        </p>
+        <a href="#" className="btn btn-primary"
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigateTo("CommunityGuid"); }}>
+          {lang === "en" ? "Watch Video" : "شاهد الفيديو"}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
  
 </div>
     

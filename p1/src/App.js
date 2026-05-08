@@ -15,7 +15,7 @@ import SocialLoginModal from "./SocialLoginModal";
 import FamilyTreeGame from "./FamilyTreeGame";
 import MemoryGame from "./MemoryGame";
 import AskZekra from "./AskZekra";
-import AskZekra1 from "./imgs/AskZekra.png";
+import AskZekra3 from "./imgs/AskZekra3.png";
 import AppGuid from "./AppGuid";
 import './App.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -25,14 +25,18 @@ import IMemories from "./iMemories";
 import Rmemories from "./Rmemories";
 import Acti from "./imgs/Acti.png";
 import GPSPhoto from "./imgs/GPSPhoto.png";
+import CommunityImg from "./imgs/community.png";
 //import BreclatePhoto from "./imgs/BreclatePhoto.png";
 import VideoCall from "./videoCall";
 import VoiceCall from "./voiceCall";
+import VideoCallCommunity from "./videoCallCommunity";
+import VoiceCallCommunity from "./voiceCallCommunity";
 import MapPage from "./Gps";
 import ActivityGuid from "./ActivityGuid";
 import ASKZEKRAguid from "./ASKZEKRAguid"
 import Memoriesguid from "./Memoriesguid"
-
+import Community from "./Community";
+import CommunityGuid from "./CommunityGuid";
 
 
 
@@ -51,6 +55,7 @@ function App() {
   });
   const [showSocialModal, setShowSocialModal] = useState(false);
   const [socialProvider, setSocialProvider] = useState(null);
+  const [chats, setChats] = useState([]);
 
   // localStorage replace backend
   useEffect(() => {
@@ -84,7 +89,20 @@ function App() {
       setUsers(initialUsers);
       localStorage.setItem('users', JSON.stringify(initialUsers));
     }
+    
+    // Load chats from localStorage
+    const savedChats = localStorage.getItem('communityChats');
+    if (savedChats) {
+      setChats(JSON.parse(savedChats));
+    }
   }, []);
+
+  // Save chats to localStorage whenever they change
+  useEffect(() => {
+    if (chats.length > 0) {
+      localStorage.setItem('communityChats', JSON.stringify(chats));
+    }
+  }, [chats]);
 
   const toggleLanguage = () => {
     setLang(lang === "en" ? "ar" : "en");
@@ -176,11 +194,22 @@ function App() {
     { title: "GPS", ar: "الموقع", page: "gps", img: GPSPhoto },
     { title: "Memories", ar: "الذكريات", page: "memories", img: "https://cdn-icons-png.freepik.com/512/3321/3321396.png" },
     { title: "Reminder", ar: "التذكير", page: "reminder", img: "https://cdn-icons-png.flaticon.com/512/2686/2686454.png" },
-    { title: "ASK ZEKRA", ar: "اسأل ذكرى", page: "askzekra", img: AskZekra1 },
+    { title: "ASK ZEKRA", ar: "اسأل ذكرى", page: "askzekra", img: AskZekra3},
     { title: "App Guidence", ar: "دليل البرنامج", page: "appguid", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-cJr3EzIfHVIEnCG-Xnn71UrmfDauj-n4Ow&s.png" },
   ];
 
-  const filteredCards = cards.filter(card =>
+  // Add Community card only for patients
+  const getFilteredCardsByUserType = () => {
+    if (user?.type === "patient") {
+      const communityCard = { title: "Community", ar: "المجتمع", page: "community", img: CommunityImg };
+      return [...cards, communityCard];
+    }
+    return cards;
+  };
+
+  const allCards = getFilteredCardsByUserType();
+
+  const filteredCards = allCards.filter(card =>
     card.title.toLowerCase().includes(search.toLowerCase()) ||
     card.ar.includes(search)
   );
@@ -290,16 +319,36 @@ function App() {
         return <VideoCall lang={lang} navigateTo={navigateTo} />;
       case "VoiceCall":
         return <VoiceCall lang={lang} navigateTo={navigateTo} />;
-        case "ActivityGuid":
+      case "VideoCallCommunity":
+        return <VideoCallCommunity lang={lang} navigateTo={navigateTo} />;
+      case "VoiceCallCommunity":
+        return <VoiceCallCommunity lang={lang} navigateTo={navigateTo} />;
+      case "ActivityGuid":
         return <ActivityGuid lang={lang} navigateTo={navigateTo} />;
-        case "ASKZEKRAguid":
+      case "ASKZEKRAguid":
         return <ASKZEKRAguid lang={lang} navigateTo={navigateTo} />;
-        case "Memoriesguid":
+      case "Memoriesguid":
         return <Memoriesguid lang={lang} navigateTo={navigateTo} />;
-        case "ChatLayout":
+      case "CommunityGuid":
+        return <CommunityGuid lang={lang} navigateTo={navigateTo} />;
+      case "ChatLayout":
         return <Chat lang={lang} navigateTo={navigateTo} />;
+      case "community":
+        return (
+          <div style={{ height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <Community 
+              lang={lang} 
+              navigateTo={navigateTo} 
+              currentUser={user}
+              onBack={() => navigateTo("home")} 
+              isMobile={window.innerWidth <= 767}
+              chats={chats}
+              setChats={setChats}
+            />
+          </div>
+        );
         
-        default:
+      default:
         return (
           
           <div dir={lang === "ar" ? "rtl" : "ltr"}>

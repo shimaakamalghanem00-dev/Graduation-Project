@@ -4,7 +4,7 @@ import { FiPhone, FiVideo } from "react-icons/fi";
 import { FiMic } from "react-icons/fi";
 import { FiSmile } from "react-icons/fi";
 import { FiArrowLeft } from "react-icons/fi";
-import CallControls from "./callcontrol";
+
 
 function Chat({ chats, setChats, selectedChatId, navigateTo, onBack, isMobile }) {
   const currentChat = chats.find((c) => c.id === selectedChatId);

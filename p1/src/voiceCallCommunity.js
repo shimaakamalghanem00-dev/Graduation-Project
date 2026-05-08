@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function VoiceCall({ navigateTo }) {
+function VoiceCallCommunity({ lang, navigateTo }) {
   const [stream, setStream] = useState(null);
 
   const startVoice = async () => {
@@ -16,7 +16,7 @@ function VoiceCall({ navigateTo }) {
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
     }
-    navigateTo("chat");
+    navigateTo("community");
   };
 
   return (
@@ -32,30 +32,44 @@ function VoiceCall({ navigateTo }) {
         alignItems: "center",
       }}
     >
-      <img
-        src="https://cutiedp.com/wp-content/uploads/2025/08/no-dp-image-5.webp"
-        alt="profile"
+      {/* groub icon*/}
+      <div
         style={{
           width: "150px",
           height: "150px",
           borderRadius: "50%",
+          background: "linear-gradient(135deg, #6BABE0, #9B8FD9)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "64px",
           marginBottom: "20px",
         }}
-      />
+      >
+        👥
+      </div>
 
-      <h2>Ahmed</h2>
-      <p>Voice Call</p>
+      <h2 style={{ color: "white", marginBottom: "8px" }}>Zekra Group</h2>
+      <p style={{ color: "#aaa", marginBottom: "0" }}>
+        {lang === "en" ? "Group Voice Call" : "مكالمة صوتية جماعية"}
+      </p>
+
+      {stream && (
+        <p style={{ color: "#25D366", marginTop: "12px", fontSize: "14px" }}>
+          {lang === "en" ? "🎙 Microphone active" : "🎙 الميكروفون نشط"}
+        </p>
+      )}
 
       <div style={{ marginTop: "40px", display: "flex", gap: "20px" }}>
         <button className="btn btn-success" onClick={startVoice}>
-          Start Call
+          {lang === "en" ? "Start Call" : "بدء المكالمة"}
         </button>
         <button className="btn btn-danger" onClick={endCall}>
-          End Call
+          {lang === "en" ? "End Call" : "إنهاء المكالمة"}
         </button>
       </div>
     </div>
   );
 }
 
-export default VoiceCall;
+export default VoiceCallCommunity;
