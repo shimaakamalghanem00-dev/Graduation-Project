@@ -20,6 +20,7 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
   const [showEmoji, setShowEmoji] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
+  const [objectUrls, setObjectUrls] = useState({});
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
   const messagesEndRef = useRef(null);
@@ -34,6 +35,66 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
 
   const messages = communityChat.messages || [];
 
+  const createSafeObjectURL = (file) => {
+    if (!file) return null;
+    if (file instanceof Blob || file instanceof File) {
+      try {
+        return URL.createObjectURL(file);
+      } catch (error) {
+        console.error("Error creating object URL:", error);
+        return null;
+      }
+    }
+    console.warn("Invalid file/blob object:", file);
+    return null;
+  };
+
+  useEffect(() => {
+    return () => {
+      Object.values(objectUrls).forEach(url => {
+        if (url) {
+          try {
+            URL.revokeObjectURL(url);
+          } catch (error) {
+            console.error("Error revoking object URL:", error);
+          }
+        }
+      });
+    };
+  }, []);
+
+  useEffect(() => {
+    const newUrls = {};
+    messages.forEach(msg => {
+      if (msg.file && (msg.file instanceof Blob || msg.file instanceof File)) {
+        const key = msg.id + '_file';
+        if (!objectUrls[key]) {
+          newUrls[key] = createSafeObjectURL(msg.file);
+        }
+      }
+      if (msg.audio && (msg.audio instanceof Blob || msg.audio instanceof File)) {
+        const key = msg.id + '_audio';
+        if (!objectUrls[key]) {
+          newUrls[key] = createSafeObjectURL(msg.audio);
+        }
+      }
+    });
+
+    Object.keys(objectUrls).forEach(key => {
+      if (!newUrls[key]) {
+        try {
+          URL.revokeObjectURL(objectUrls[key]);
+        } catch (error) {
+          console.error("Error revoking old URL:", error);
+        }
+      }
+    });
+    
+    if (Object.keys(newUrls).length > 0) {
+      setObjectUrls(prev => ({ ...prev, ...newUrls }));
+    }
+  }, [messages]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -43,32 +104,37 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
   };
 
   const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const recorder = new MediaRecorder(stream);
-    chunksRef.current = [];
-
-    recorder.ondataavailable = (e) => {
-      if (e.data.size > 0) chunksRef.current.push(e.data);
-    };
-
-    recorder.onstop = () => {
-      if (chunksRef.current.length === 0) return;
-      const audioBlob = new Blob(chunksRef.current, { type: "audio/webm" });
-      addMessage({
-        id: Date.now(),
-        audio: audioBlob,
-        sender: "me",
-        senderName: currentUser?.name || "You",
-        senderPhoto: currentUser?.profilePhoto || "https://cutiedp.com/wp-content/uploads/2025/08/no-dp-image-5.webp",
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        seen: false,
-      });
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
       chunksRef.current = [];
-    };
 
-    recorder.start();
-    mediaRecorderRef.current = recorder;
-    setIsRecording(true);
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+
+      recorder.onstop = () => {
+        if (chunksRef.current.length === 0) return;
+        const audioBlob = new Blob(chunksRef.current, { type: "audio/webm" });
+        addMessage({
+          id: Date.now(),
+          audio: audioBlob,
+          sender: "me",
+          senderName: currentUser?.name || "You",
+          senderPhoto: currentUser?.profilePhoto || "https://cutiedp.com/wp-content/uploads/2025/08/no-dp-image-5.webp",
+          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          seen: false,
+        });
+        chunksRef.current = [];
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      recorder.start();
+      mediaRecorderRef.current = recorder;
+      setIsRecording(true);
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+    }
   };
 
   const stopRecording = () => {
@@ -79,6 +145,21 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
   };
 
   const deleteMessage = (msgId) => {
+    if (objectUrls[msgId + '_file']) {
+      try {
+        URL.revokeObjectURL(objectUrls[msgId + '_file']);
+      } catch (error) {
+        console.error("Error revoking file URL:", error);
+      }
+    }
+    if (objectUrls[msgId + '_audio']) {
+      try {
+        URL.revokeObjectURL(objectUrls[msgId + '_audio']);
+      } catch (error) {
+        console.error("Error revoking audio URL:", error);
+      }
+    }
+    
     if (setChats) {
       setChats((prev) =>
         prev.map((chat) =>
@@ -91,6 +172,15 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
   };
 
   const addMessage = (newMsg) => {
+    if (newMsg.file && !(newMsg.file instanceof Blob) && !(newMsg.file instanceof File)) {
+      console.error("Invalid file in message:", newMsg.file);
+      delete newMsg.file;
+    }
+    if (newMsg.audio && !(newMsg.audio instanceof Blob) && !(newMsg.audio instanceof File)) {
+      console.error("Invalid audio in message:", newMsg.audio);
+      delete newMsg.audio;
+    }
+
     if (setChats) {
       setChats((prev) => {
         const existingChat = prev.find((c) => c.id === communityId);
@@ -124,14 +214,25 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
+    
+    
+    if (!(file instanceof File)) {
+      console.error("Uploaded file is not a valid File object");
+      return;
+    }
+    
     addMessage({
       id: Date.now(),
-      file,
+      file: file,
       sender: "me",
       senderName: currentUser?.name || "You",
       senderPhoto: currentUser?.profilePhoto || "https://cutiedp.com/wp-content/uploads/2025/08/no-dp-image-5.webp",
       time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      seen: false,
     });
+    
+    
+    event.target.value = '';
   };
 
   return (
@@ -148,7 +249,7 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
         flexShrink: 0,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {/*Back*/}
+          {/* Back */}
           <button
             onClick={onBack}
             style={{
@@ -166,7 +267,7 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
             <FiArrowLeft size={24} color="#333" />
           </button>
 
-          {/* groub icon */}
+          {/* group icon */}
           <div style={{
             width: "40px",
             height: "40px",
@@ -191,7 +292,6 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
             </div>
           </div>
         </div>
-
 
         <div style={{ display: "flex", gap: "10px" }}>
           <button
@@ -228,7 +328,7 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
         </div>
       </div>
 
-      {/* MESSAGES  */}
+      {/* MESSAGES */}
       <div style={{
         flex: 1,
         padding: "20px",
@@ -246,6 +346,10 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
             const senderColor = getSenderColor(msg.senderName);
             const prevMsg = messages[index - 1];
             const isSameSender = prevMsg && prevMsg.sender === msg.sender && prevMsg.senderName === msg.senderName;
+            
+            
+            const fileUrl = objectUrls[msg.id + '_file'];
+            const audioUrl = objectUrls[msg.id + '_audio'];
 
             return (
               <div
@@ -260,7 +364,6 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
                   cursor: "pointer",
                 }}
               >
-
                 {!isMe && (
                   <div style={{ width: "30px", flexShrink: 0 }}>
                     {!isSameSender && (
@@ -286,7 +389,7 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
                   width: "fit-content",
                   display: "inline-block",
                 }}>
-                  {/* name sender*/}
+                  {/* sender name */}
                   {!isMe && !isSameSender && (
                     <div style={{
                       fontSize: "12px",
@@ -303,33 +406,39 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
                       <div style={{ color: isMe ? "#333" : "#fff" }}>{msg.text}</div>
                     )}
 
-                    {msg.file && msg.file.type?.startsWith("image/") && (
+                    {msg.file && msg.file.type?.startsWith("image/") && fileUrl && (
                       <img
-                        src={URL.createObjectURL(msg.file)}
+                        src={fileUrl}
                         alt="sent"
                         style={{ maxWidth: "200px", borderRadius: "10px", marginTop: "5px" }}
+                        onError={(e) => {
+                          console.error("Failed to load image for message:", msg.id);
+                          e.target.style.display = "none";
+                        }}
                       />
                     )}
 
-                    {msg.file && msg.file.type?.startsWith("video/") && (
+                    {msg.file && msg.file.type?.startsWith("video/") && fileUrl && (
                       <video
                         controls
-                        src={URL.createObjectURL(msg.file)}
+                        src={fileUrl}
                         style={{ maxWidth: "320px", borderRadius: "10px", marginTop: "5px" }}
+                        onError={(e) => console.error("Failed to load video for message:", msg.id)}
                       />
                     )}
 
                     {msg.file && !msg.file.type?.startsWith("image/") && !msg.file.type?.startsWith("video/") && (
                       <div style={{ marginTop: "5px", color: isMe ? "#333" : "#fff" }}>
-                        📎 {msg.file.name}
+                        📎 {msg.file.name || "File"}
                       </div>
                     )}
 
-                    {msg.audio && (
+                    {msg.audio && audioUrl && (
                       <audio
                         controls
-                        src={URL.createObjectURL(msg.audio)}
+                        src={audioUrl}
                         style={{ width: "250px", height: "25px" }}
+                        onError={(e) => console.error("Failed to load audio for message:", msg.id)}
                       />
                     )}
                   </div>
@@ -363,7 +472,6 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
         </div>
       )}
 
-
       <div style={{
         padding: "10px",
         borderTop: "1px solid #ddd",
@@ -373,7 +481,6 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
         background: "#f0f2f5",
         flexShrink: 0,
       }}>
-
         <button
           onClick={() => document.getElementById("communityFileUpload").click()}
           style={{
@@ -393,7 +500,6 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
         >
           +
         </button>
-
 
         <button
           onClick={() => setShowEmoji(!showEmoji)}
@@ -422,7 +528,6 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
           onChange={handleFileUpload}
         />
 
-  
         <input
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
@@ -441,7 +546,6 @@ function Community({ lang, navigateTo, onBack, isMobile, currentUser, chats, set
           }}
         />
 
-       
         <button
           style={{
             height: "40px",
